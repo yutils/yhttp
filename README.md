@@ -132,10 +132,9 @@ YHttp.create().downloadFile(url, f, object :
 })
 ```
 
-
 ## 如安卓中使用注意添加权限：
-> * 必须权限                 ——>     android.permission.INTERNET
-> * 返回对象必须引用Gson      ——>     implementation 'com.google.code.gson:gson:2.8.6'
+> * 必须权限 　　　　　　　　——>　　　　 android.permission.INTERNET
+> * 返回对象必须引用Gson　　 ——>　　　　 implementation 'com.google.code.gson:gson:2.8.6'
 
 Github地址：[https://github.com/yutils/yhttp](https://github.com/yutils/yhttp)
 
