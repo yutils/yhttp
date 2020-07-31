@@ -1,5 +1,5 @@
-# YHttp网络请求，支持java，kotlin
-> * 1.支持get，post请求
+# YHttp网络请求，支持原生java工程，原生kotlin工程，安卓工程。
+> * 1.支持get，post请求，支持同步请求，支持异步请求
 > * 2.支持文件上传下载，回调进度条
 > * 3.post请求可为字符串，map，byte[]
 > * 4.可以直接返回字符串
