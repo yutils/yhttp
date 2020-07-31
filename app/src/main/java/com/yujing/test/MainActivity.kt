@@ -144,7 +144,6 @@ class MainActivity : BaseActivity() {
                 progress = (progress * 100).toInt().toDouble() / 100
                 text2.text = "进度：$progress%"
             }
-
             override fun success(file: File) {}
             override fun fail(value: String) {}
         })
