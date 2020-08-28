@@ -123,15 +123,6 @@ class MainActivity : BaseActivity() {
                         YShow.finish()
                         text2.text = "失败：$value"
                     }
-//                override fun success(bytes: ByteArray?, value: String?) {
-//                    YShow.finish()
-//                    text2.text = "成功：$value"
-//                }
-//
-//                override fun fail(value: String?) {
-//                    YShow.finish()
-//                    text2.text = "失败：$value"
-//                }
                 })
 
 //            val hashMap: HashMap<String, File> = HashMap()
