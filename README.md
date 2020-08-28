@@ -1,6 +1,6 @@
 # YHttp网络请求，支持原生java工程，原生kotlin工程，安卓工程。
 > * 1.支持get，post请求，支持同步请求，支持异步请求
-> * 2.支持文件上传下载，回调进度条
+> * 2.支持各种格式文件上传下载，回调进度条
 > * 3.post请求可为字符串，map，byte[]
 > * 4.可以直接返回字符串
 > * 5.直接返回对象
@@ -53,7 +53,7 @@ dependencies {
 
 
 //异步请求,返回返回对象，如是安卓，返回值自动回到主线程
-String url="http://192.168.1.170:10136/api/getUser";
+String url="http://192.168.6.9:8090/api/getUser";
 HashMap <String,Object> hashMap=new HashMap<>();
 hashMap.put("id","123");
 YHttp.create().post(url, hashMap, new YObjectListener<User>() {
@@ -61,7 +61,6 @@ YHttp.create().post(url, hashMap, new YObjectListener<User>() {
     public void success(byte[] bytes, User value) {
         //请求结果,对象
     }
-
     @Override
     public void fail(String value) {
         //错误原因
@@ -80,6 +79,22 @@ YHttp.create().post(url, hashMap, new YHttpListener() {
     }
 });
 
+//java文件上传
+String url = "http://192.168.6.9:8090/crash/upload/file";
+List<Upload> uploads = new ArrayList<>();
+uploads.add(new Upload("file1", new File("D:/1.jpg")));
+uploads.add(new Upload("file2", "ABCDEF".getBytes()).setFilename("abcd.txt"));
+
+YHttp.create().setSessionId(session).upload(url, "", uploads, new YHttpListener() {
+    @Override
+    public void success(byte[] bytes, String value){
+        System.out.println("上传成功：" + value);
+    }
+    @Override
+    public void fail(String value) {
+        System.out.println("上传失败：" + value);
+    }
+});
 ```
 
 <font color=#0099ff size=4 >kotlin</font>
@@ -116,8 +131,23 @@ YHttp.create().post(url, map, object : YObjectListener<User>() {
      }
 })
 
+//文件上传
+val url = "http://192.168.6.9:8090/crash/upload/file"
+val list: MutableList<Upload> = ArrayList()
+list.add(Upload("file1",file))
+list.add(Upload("file2.jpg",bytes))
+list.add(Upload("file3",bitmap))
+YHttp.create().setSessionId(session).upload(url, "", list, object : YHttpListener {
+    override fun success(bytes: ByteArray?, value: String?) {
+        //成功
+    }
+    override fun fail(value: String?) {
+        //失败
+    }
+})
+
 //文件下载，如是安卓，返回值自动回到主线程
-val url = "http://dldir1.qq.com/qqfile/qq/QQ8.9.2/20760/QQ8.9.2.exe"
+val url = "https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe"
 var f = File( "D:/BB.exe")
 YHttp.create().downloadFile(url, f, object :
     YHttpDownloadFileListener {

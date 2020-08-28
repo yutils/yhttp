@@ -1,19 +1,22 @@
 package com.yutils.http;
 
+import android.graphics.Bitmap;
+
 import com.yutils.http.contract.YHttpProgressListener;
 import com.yutils.http.contract.YSessionListener;
+import com.yutils.http.model.Upload;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -332,11 +335,29 @@ public class YHttpBase {
      *
      * @param requestUrl   url
      * @param requestBytes 请求内容
-     * @param fileMap      文件
+     * @param fileMap      key，文件
      * @return 请求结果
      * @throws Exception 异常
      */
     public byte[] upload(String requestUrl, byte[] requestBytes, Map<String, File> fileMap) throws Exception {
+        List<Upload> uploads = new ArrayList<>();
+        for (Map.Entry<String, File> entry : fileMap.entrySet()) {
+            if (entry.getValue() == null) continue;
+            uploads.add(new Upload(entry.getKey(), entry.getValue()));
+        }
+        return upload(requestUrl, requestBytes, uploads);
+    }
+
+    /**
+     * 文件上传，同步柱塞试
+     *
+     * @param requestUrl   url
+     * @param requestBytes 请求内容
+     * @param uploads      上传的key，内容，文件名，contentType
+     * @return 请求结果
+     * @throws Exception 异常
+     */
+    public byte[] upload(String requestUrl, byte[] requestBytes, List<Upload> uploads) throws Exception {
         // 打开一个HttpURLConnection连接
         HttpURLConnection urlConn = YHttpURLConnectionFactory.create(requestUrl, crtSSL);
         // 设置连接超时时间
@@ -356,6 +377,14 @@ public class YHttpBase {
         urlConn.setRequestProperty("connection", "Keep-Alive");
         urlConn.setRequestProperty("Charset", "utf-8");
         urlConn.setRequestProperty("Content-Type", contentType);//"application/x-www-form-urlencoded;charset=utf-8";
+        //安卓6.0下使用谷歌浏览器67
+        //Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Mobile Safari/537.36
+        //iPhoneX下使用谷歌浏览器67
+        //Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1
+        //win10下使用谷歌浏览器67
+        //Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36
+        urlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36");
+        urlConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
         if (mapSetRequestProperty != null)
             for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
                 urlConn.setRequestProperty(entry.getKey(), entry.getValue());
@@ -370,7 +399,7 @@ public class YHttpBase {
         // 开始连接
         urlConn.connect();
         // 发送请求参数
-        sendFile(urlConn, requestBytes, fileMap);
+        send(urlConn, requestBytes, uploads);
         // 获取session
         getSession(urlConn);
         // 判断请求是否成功
@@ -385,59 +414,72 @@ public class YHttpBase {
     }
 
     /**
-     * 发送文件,将其要发送的内容和文件转换为byte[]并且发送
+     * 发送文件的数据组装
      *
-     * @param httpURLConnection url
-     * @param requestBytes      请求内容
-     * @param fileMap           请求文件
+     * @param httpURLConnection 连接对象
+     * @param requestBytes      请求的参数
+     * @param uploads           上传的文件
      * @throws IOException 异常
      */
-    protected void sendFile(HttpURLConnection httpURLConnection, byte[] requestBytes, Map<String, File> fileMap) throws IOException {
-        //安卓6.0下使用谷歌浏览器67
-        //Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Mobile Safari/537.36
-        //iPhoneX下使用谷歌浏览器67
-        //Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1
-        //win10下使用谷歌浏览器67
-        //Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36
-        httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36");
-        httpURLConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+    protected void send(HttpURLConnection httpURLConnection, byte[] requestBytes, List<Upload> uploads) throws IOException {
         OutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());
         // 文本参数
-        if (requestBytes != null) {
-            out.write(requestBytes);
-        }
+        if (requestBytes != null) out.write(requestBytes);
         // 文件
-        if (fileMap != null) {
-            for (Map.Entry<String, File> entry : fileMap.entrySet()) {
-                File file = entry.getValue();
-                if (file == null)
-                    continue;
-                if (!file.exists()) {
-                    System.err.println(file.getPath() + "(系统找不到指定的文件。)");
-                    throw new FileNotFoundException(file.getPath() + "(系统找不到指定的文件。)");
-                }
-                StringBuilder strBuf = new StringBuilder();
-                strBuf.append("\r\n--").append(BOUNDARY).append("\r\n")
-                        .append("Content-Disposition: form-data; name=\"")
-                        .append(entry.getKey())
-                        .append("\"; filename=\"")
-                        .append(file.getName())
-                        .append("\"\r\n");
-                if (file.getName().lastIndexOf(".png") != -1) {
-                    strBuf.append("Content-Type:image/png" + "\r\n\r\n");
-                } else if (file.getName().lastIndexOf(".jpg") != -1 || file.getName().lastIndexOf(".jpeg") != -1) {
-                    strBuf.append("Content-Type:image/jpeg" + "\r\n\r\n");
+        if (uploads != null) {
+            for (Upload item : uploads) {
+                if (item.getBytes() != null) {
+                    StringBuilder strBuf = new StringBuilder();
+                    strBuf.append("\r\n--").append(BOUNDARY).append("\r\n")
+                            .append("Content-Disposition: form-data; name=\"")
+                            .append(item.getKey())
+                            .append("\"; filename=\"")
+                            .append(item.getFilename())
+                            .append("\"\r\n");
+                    strBuf.append("Content-Type:").append(item.getContentType()).append("\r\n\r\n");
+                    out.write(strBuf.toString().getBytes());
+                    out.write(item.getBytes());
+                } else if (item.getFile() != null) {
+                    StringBuilder strBuf = new StringBuilder();
+                    strBuf.append("\r\n--").append(BOUNDARY).append("\r\n")
+                            .append("Content-Disposition: form-data; name=\"")
+                            .append(item.getKey())
+                            .append("\"; filename=\"")
+                            .append(item.getFilename())
+                            .append("\"\r\n");
+                    strBuf.append("Content-Type:").append(item.getContentType()).append("\r\n\r\n");
+                    out.write(strBuf.toString().getBytes());
+                    DataInputStream in = new DataInputStream(new FileInputStream(item.getFile()));
+                    int bytes;
+                    byte[] bufferOut = new byte[1024 * 8];
+                    while ((bytes = in.read(bufferOut)) != -1)
+                        out.write(bufferOut, 0, bytes);
+                    in.close();
                 } else {
-                    strBuf.append("Content-Type:application/octet-stream" + "\r\n\r\n");
+                    try {
+                        Class.forName("android.graphics.Bitmap");
+                        if (item.getBitmap() != null) {
+                            StringBuilder strBuf = new StringBuilder();
+                            strBuf.append("\r\n--").append(BOUNDARY).append("\r\n")
+                                    .append("Content-Disposition: form-data; name=\"")
+                                    .append(item.getKey())
+                                    .append("\"; filename=\"")
+                                    .append(item.getFilename())
+                                    .append("\"\r\n");
+                            strBuf.append("Content-Type:").append(item.getContentType()).append("\r\n\r\n");
+                            out.write(strBuf.toString().getBytes());
+                            // bitmap转Bytes
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            if (item.getBitmap() instanceof Bitmap) {
+                                Bitmap bitmap = (Bitmap) item.getBitmap();
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+                                out.write(baos.toByteArray());
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("上传Bitmap异常：" + e.getMessage());
+                    }
                 }
-                out.write(strBuf.toString().getBytes());
-                DataInputStream in = new DataInputStream(new FileInputStream(file));
-                int bytes;
-                byte[] bufferOut = new byte[1024 * 8];
-                while ((bytes = in.read(bufferOut)) != -1) {
-                    out.write(bufferOut, 0, bytes);
-                }
-                in.close();
             }
         }
         out.write(("\r\n--" + BOUNDARY + "--\r\n").getBytes());// 结束标记
