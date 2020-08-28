@@ -19,7 +19,6 @@ import com.yutils.http.contract.YObjectListener
 import com.yutils.http.model.Upload
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import kotlin.collections.HashMap
 
 class MainActivity : BaseActivity() {
 
@@ -109,20 +108,21 @@ class MainActivity : BaseActivity() {
 
             val url = "http://192.168.6.9:8090/crash/upload/file"
             val list: MutableList<Upload> = ArrayList()
-            list.add(Upload("file1",file))
-            list.add(Upload("file2.jpg",bytes))
-            list.add(Upload("file3",bitmap))
+            list.add(Upload("file1", file))
+            list.add(Upload("file2", "ABCDEF".toByteArray()).setFilename("abcd.txt"))
+            list.add(Upload("file3", bitmap))
 
-            YHttp.create().setSessionId(session).upload(url, "", list, object : YObjectListener<UU>() {
-                override fun success(bytes: ByteArray?, value: UU?) {
-                    YShow.finish()
-                    text2.text = value.toString()
-                }
+            YHttp.create().setSessionId(session)
+                .upload(url, "", list, object : YObjectListener<UU>() {
+                    override fun success(bytes: ByteArray?, value: UU?) {
+                        YShow.finish()
+                        text2.text = value.toString()
+                    }
 
-                override fun fail(value: String?) {
-                    YShow.finish()
-                    text2.text = "失败：$value"
-                }
+                    override fun fail(value: String?) {
+                        YShow.finish()
+                        text2.text = "失败：$value"
+                    }
 //                override fun success(bytes: ByteArray?, value: String?) {
 //                    YShow.finish()
 //                    text2.text = "成功：$value"
@@ -132,7 +132,7 @@ class MainActivity : BaseActivity() {
 //                    YShow.finish()
 //                    text2.text = "失败：$value"
 //                }
-            })
+                })
 
 //            val hashMap: HashMap<String, File> = HashMap()
 //            hashMap["files1"] = file
@@ -162,6 +162,7 @@ class MainActivity : BaseActivity() {
             override fun success(bytes: ByteArray?, value: String?) {
                 text2.text = "成功：$value"
             }
+
             override fun fail(value: String?) {
                 text2.text = "失败：$value"
             }
@@ -174,6 +175,7 @@ class MainActivity : BaseActivity() {
             override fun success(bytes: ByteArray?, value: User?) {
                 text2.text = "对象：${value.toString()} \n转换成json：${Gson().toJson(value)}"
             }
+
             override fun fail(value: String?) {
                 text2.text = "失败：$value"
             }
@@ -224,6 +226,7 @@ class MainActivity : BaseActivity() {
         }
         return directoryPath
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         yPicture.onActivityResult(requestCode, resultCode, data)

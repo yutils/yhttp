@@ -82,7 +82,7 @@ YHttp.create().setSessionId(session).get(url, object : YObjectListener<User>(){
 val url = "http://192.168.6.9:8090/crash/upload/file"
 val list: MutableList<Upload> = ArrayList()
 list.add(Upload("file1",file))
-list.add(Upload("file2.jpg",bytes))
+list.add(Upload("file2", "ABCDEF".toByteArray()).setFilename("abcd.txt"))
 list.add(Upload("file3",bitmap))
 YHttp.create().setSessionId(session).upload(url, "", list, object : YHttpListener {
     override fun success(bytes: ByteArray?, value: String?) {
