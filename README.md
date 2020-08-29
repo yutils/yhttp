@@ -31,7 +31,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.yutils:yhttp:1.0.0'
+    implementation 'com.github.yutils:yhttp:1.0.2'
 }
 ```
 
