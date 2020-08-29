@@ -1,7 +1,10 @@
-package com.yujing.test
+package com.yujing.test.activity
 
 import android.content.Intent
 import com.google.gson.Gson
+import com.yujing.test.R
+import com.yujing.test.utils.YVersionUpdate
+import com.yujing.test.base.BaseActivity
 import com.yujing.test.bean.UU
 import com.yujing.test.bean.User
 import com.yujing.utils.*

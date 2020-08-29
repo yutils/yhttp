@@ -1,4 +1,4 @@
-package com.yujing.test
+package com.yujing.test.utils
 
 import android.app.Activity
 import android.app.AlertDialog

@@ -1,4 +1,4 @@
-def jarName = "yHttp1.0.1"
+def jarName = "yHttp1.0.2"
 
 //Copy类型，请在Terminal中运行gradlew makeJar
 task makeJar(type: Copy) {
