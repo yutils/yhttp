@@ -21,3 +21,9 @@ data class 用户(
     val nickName: String,
     val phone: String
 )
+class Test{
+   fun test(){
+
+
+   }
+}

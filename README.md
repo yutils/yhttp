@@ -35,39 +35,27 @@ dependencies {
 }
 ```
 
-##  用法：
+##  用法举例：
   1.YHttp返回结果在子线程，适合java工程
   2.YHttp返回结果在主线程，适合安卓工程
 
 <font color=#0099ff size=4 >java</font>
 ``` java
+String url = "http://www.xxx.xxx/xxx";
+
 //同步请求get
-   String url = "http://timor.tech/api/holiday/info/";
-   YHttpBase YHttpBase = new YHttpBase();
-   YHttpBase.setConnectTimeout(3000);
-   YHttpBase.setContentType("application/json; charset=utf-8");
-   YHttpBase.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36");
-   String json = new String(YHttpBase.get(url), StandardCharsets.UTF_8);
+YHttpBase yHttp = new YHttpBase().setConnectTimeout(3000).setContentType("application/json; charset=utf-8");
+String json = new String(yHttp.get(url), StandardCharsets.UTF_8);
+
 //同步请求post
-   String json = new String(YHttpBase.post(url,"id=123&name=123".getBytes()), StandardCharsets.UTF_8);
+String json = new String(yHttp.post(url,"id=123&name=123".getBytes()), StandardCharsets.UTF_8);
 
-
-//异步请求,返回返回对象，如是安卓，返回值自动回到主线程
+//异步请求
 String url="http://192.168.6.9:8090/api/getUser";
 HashMap <String,Object> hashMap=new HashMap<>();
 hashMap.put("id","123");
-YHttp.create().post(url, hashMap, new YObjectListener<User>() {
-    @Override
-    public void success(byte[] bytes, User value) {
-        //请求结果,对象
-    }
-    @Override
-    public void fail(String value) {
-        //错误原因
-    }
-});
 
-//异步请求,返回字符串，如是安卓，返回值自动回到主线程
+//异步请求,返回字符串，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
 YHttp.create().post(url, hashMap, new YHttpListener() {
     @Override
     public void success(byte[] bytes, String value) throws Exception {
@@ -79,7 +67,21 @@ YHttp.create().post(url, hashMap, new YHttpListener() {
     }
 });
 
-//java文件上传
+
+//异步请求,返回返回对象，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
+YHttp.create().post(url, hashMap, new YObjectListener<User>() {
+    @Override
+    public void success(byte[] bytes, User value) {
+        //请求结果,对象
+    }
+    @Override
+    public void fail(String value) {
+        //错误原因
+    }
+});
+
+
+//java文件上传，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
 String url = "http://192.168.6.9:8090/crash/upload/file";
 List<Upload> uploads = new ArrayList<>();
 uploads.add(new Upload("file1", new File("D:/1.jpg")));
@@ -95,19 +97,36 @@ YHttp.create().setSessionId(session).upload(url, "", uploads, new YHttpListener(
         System.out.println("上传失败：" + value);
     }
 });
+
+
+//文件下载，如是安卓项目返回值自动回到主线程
+String url = "https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe";
+File f = new File( "D:/QQ.exe");
+YHttp.create().downloadFile(url, f, new YHttpDownloadFileListener (){
+    @Override
+    public void progress(int downloadSize, int fileSize) {
+        double progress = ((int)(10000.0 * downloadSize / fileSize))/100.0;//下载进度，保留2位小数
+    }
+    @Override
+    public void success(File file) {
+        //下载完成
+    }
+    @Override
+    public void fail(String value) {
+        //下载失败
+    }
+});
 ```
 
 <font color=#0099ff size=4 >kotlin</font>
 ``` kotlin
-var session = ""
 
+var session = ""
 val url = "http://www.xxx.xxx/xxx"
 val hashMap: HashMap<String, Any> = hashMapOf("name" to "abc", "password" to "123456")
 
-//请求。保存sessionId，如登录，如是安卓，返回值自动回到主线程
-YHttp.create().setSessionListener { sessionId ->
-    session = sessionId //获取的session
-}.post(url, hashMap, object : YHttpListener {
+//请求。保存sessionId，如登录，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
+YHttp.create().setSessionListener { sessionId ->session = sessionId }.post(url, hashMap, object : YHttpListener {
     override fun success(bytes: ByteArray?, value: String?) {
     //成功
     }
@@ -117,8 +136,8 @@ YHttp.create().setSessionListener { sessionId ->
 })
     
 
-//请求返回对象，带上sessionId，如业务操作，如是安卓，返回值自动回到主线程
-YHttp.create().post(url, map, object : YObjectListener<User>() {
+//请求返回对象，带上sessionId，如业务操作，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
+YHttp.create().setSessionId(session).post(url, map, object : YObjectListener<User>() {
      override fun success(bytes: ByteArray?, value: User?) {
          runOnUiThread(Runnable {
              YToast.show(App.get(), value?.Name)
@@ -131,13 +150,16 @@ YHttp.create().post(url, map, object : YObjectListener<User>() {
      }
 })
 
-//文件上传
+
+//文件上传，并且上次参数请求，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
 val url = "http://192.168.6.9:8090/crash/upload/file"
+val params: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "123456")
 val list: MutableList<Upload> = ArrayList()
 list.add(Upload("file1",file))
 list.add(Upload("file2", "ABCDEF".toByteArray()).setFilename("abcd.txt"))
 list.add(Upload("file3",bitmap))
-YHttp.create().setSessionId(session).upload(url, "", list, object : YHttpListener {
+
+YHttp.create().setSessionId(session).upload(url, params, list, object : YHttpListener {
     override fun success(bytes: ByteArray?, value: String?) {
         //成功
     }
@@ -146,16 +168,14 @@ YHttp.create().setSessionId(session).upload(url, "", list, object : YHttpListene
     }
 })
 
-//文件下载，如是安卓，返回值自动回到主线程
+
+//文件下载，如是安卓项目返回值自动回到主线程
 val url = "https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe"
 var f = File( "D:/BB.exe")
 YHttp.create().downloadFile(url, f, object :
     YHttpDownloadFileListener {
     override fun progress(downloadSize: Int, fileSize: Int) {
-        text1.text = "$downloadSize/$fileSize"
-        var progress = 100.0 * downloadSize / fileSize
-        progress = (progress * 100).toInt().toDouble() / 100
-        text = "进度：$progress%"
+       val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
     }
     override fun success(file: File) {}//下载完成
     override fun fail(value: String) {}//下载出错

@@ -31,6 +31,11 @@ import java.util.Objects;
 public class YHttpBase {
     protected String contentType = "application/x-www-form-urlencoded;charset=utf-8";
     protected int connectTimeout = 1000 * 20;
+    //userAgent,Android     ---->   Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Mobile Safari/537.36
+    //userAgent,iPhoneX     ---->   Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1
+    //userAgent,iPad        ---->   Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1 Edg/85.0.4183.83
+    //userAgent,windows10   ---->   Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36
+    protected String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36";
     /**
      * boundary就是request头和上传文件内容的分隔符
      */
@@ -131,6 +136,7 @@ public class YHttpBase {
         urlConn.setRequestProperty("connection", "Keep-Alive");
         urlConn.setRequestProperty("Charset", "utf-8");
         urlConn.setRequestProperty("Content-Type", contentType);
+        urlConn.setRequestProperty("User-Agent", userAgent);
         if (mapSetRequestProperty != null)
             for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
                 urlConn.setRequestProperty(entry.getKey(), entry.getValue());
@@ -181,7 +187,8 @@ public class YHttpBase {
         urlConn.setRequestProperty("accept", "*/*");
         urlConn.setRequestProperty("connection", "Keep-Alive");
         urlConn.setRequestProperty("Charset", "utf-8");
-        urlConn.setRequestProperty("Content-Type", contentType);//"application/x-www-form-urlencoded;charset=utf-8";
+        urlConn.setRequestProperty("Content-Type", contentType);
+        urlConn.setRequestProperty("User-Agent", userAgent);
         if (mapSetRequestProperty != null)
             for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
                 urlConn.setRequestProperty(entry.getKey(), entry.getValue());
@@ -294,7 +301,8 @@ public class YHttpBase {
         urlConn.setRequestProperty("accept", "*/*");
         urlConn.setRequestProperty("connection", "Keep-Alive");
         urlConn.setRequestProperty("Charset", "utf-8");
-        urlConn.setRequestProperty("Content-Type", contentType);//"application/x-www-form-urlencoded;charset=utf-8";
+        urlConn.setRequestProperty("Content-Type", contentType);
+        urlConn.setRequestProperty("User-Agent", userAgent);
         if (mapSetRequestProperty != null)
             for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
                 urlConn.setRequestProperty(entry.getKey(), entry.getValue());
@@ -376,14 +384,8 @@ public class YHttpBase {
         urlConn.setRequestProperty("accept", "*/*");
         urlConn.setRequestProperty("connection", "Keep-Alive");
         urlConn.setRequestProperty("Charset", "utf-8");
-        urlConn.setRequestProperty("Content-Type", contentType);//"application/x-www-form-urlencoded;charset=utf-8";
-        //安卓6.0下使用谷歌浏览器67
-        //Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Mobile Safari/537.36
-        //iPhoneX下使用谷歌浏览器67
-        //Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1
-        //win10下使用谷歌浏览器67
-        //Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36
-        urlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36");
+        urlConn.setRequestProperty("Content-Type", contentType);
+        urlConn.setRequestProperty("User-Agent", userAgent);
         urlConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
         if (mapSetRequestProperty != null)
             for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
