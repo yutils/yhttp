@@ -43,7 +43,7 @@ dependencies {
   
   2.合安卓工程中，异步请求，如果在UI线程（主线程）中创建YHttp，将返回结果返回到UI线程（主线程）
 
-<font color=#0099ff size=4 >java</font>
+java举例
 ``` java
 String url = "http://www.xxx.xxx/xxx";
 
@@ -125,7 +125,7 @@ YHttp.create().downloadFile(url, f, new YHttpDownloadFileListener (){
 });
 ```
 
-<font color=#0099ff size=4 >kotlin</font>
+kotlin举例
 ``` kotlin
 
 //当前session值
