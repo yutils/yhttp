@@ -102,7 +102,7 @@ var f = File( "D:/BB.exe")
 YHttp.create().downloadFile(url, f, object :
     YHttpDownloadFileListener {
     override fun progress(downloadSize: Int, fileSize: Int) {
-         double progress = ((int)(10000.0 * downloadSize / fileSize))/100.0;//下载进度，保留2位小数
+         val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
     }
     override fun success(file: File) {}//下载完成
     override fun fail(value: String) {}//下载出错
