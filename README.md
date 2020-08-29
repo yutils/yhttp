@@ -50,13 +50,16 @@ String json = new String(yHttp.get(url), StandardCharsets.UTF_8);
 //同步请求post
 String json = new String(yHttp.post(url,"id=123&name=123".getBytes()), StandardCharsets.UTF_8);
 
-//异步请求
-String url="http://192.168.6.9:8090/api/getUser";
-HashMap <String,Object> hashMap=new HashMap<>();
-hashMap.put("id","123");
+//————————————————异步请求————————————————
+
+//定义地址
+String url="http://www.xxx.xxx/getUser";
+//请求参数
+HashMap <String,Object> paramsMap=new HashMap<>();
+paramsMap.put("id","123");
 
 //异步请求,返回字符串，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
-YHttp.create().post(url, hashMap, new YHttpListener() {
+YHttp.create().post(url, paramsMap, new YHttpListener() {
     @Override
     public void success(byte[] bytes, String value) throws Exception {
         //请求结果,文本
@@ -69,7 +72,7 @@ YHttp.create().post(url, hashMap, new YHttpListener() {
 
 
 //异步请求,返回返回对象，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
-YHttp.create().post(url, hashMap, new YObjectListener<User>() {
+YHttp.create().post(url, paramsMap, new YObjectListener<User>() {
     @Override
     public void success(byte[] bytes, User value) {
         //请求结果,对象
@@ -121,11 +124,14 @@ YHttp.create().downloadFile(url, f, new YHttpDownloadFileListener (){
 <font color=#0099ff size=4 >kotlin</font>
 ``` kotlin
 
+//当前session值
 var session = ""
+//请求地址
 val url = "http://www.xxx.xxx/xxx"
+//请求参数
 val hashMap: HashMap<String, Any> = hashMapOf("name" to "abc", "password" to "123456")
 
-//请求。保存sessionId，如登录，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
+//post请求。保存sessionId，如登录，如是安卓项目返回值自动回到主线程，监听设置成YHttpListener就返回字符串，监听设置成YObjectListener就返回对象
 YHttp.create().setSessionListener { sessionId ->session = sessionId }.post(url, hashMap, object : YHttpListener {
     override fun success(bytes: ByteArray?, value: String?) {
     //成功
@@ -158,7 +164,7 @@ val list: MutableList<Upload> = ArrayList()
 list.add(Upload("file1",file))
 list.add(Upload("file2", "ABCDEF".toByteArray()).setFilename("abcd.txt"))
 list.add(Upload("file3",bitmap))
-
+//请求
 YHttp.create().setSessionId(session).upload(url, params, list, object : YHttpListener {
     override fun success(bytes: ByteArray?, value: String?) {
         //成功
@@ -171,7 +177,9 @@ YHttp.create().setSessionId(session).upload(url, params, list, object : YHttpLis
 
 //文件下载，如是安卓项目返回值自动回到主线程
 val url = "https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe"
+//保存路径
 var f = File( "D:/BB.exe")
+//请求
 YHttp.create().downloadFile(url, f, object :
     YHttpDownloadFileListener {
     override fun progress(downloadSize: Int, fileSize: Int) {
