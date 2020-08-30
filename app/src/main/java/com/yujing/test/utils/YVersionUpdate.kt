@@ -18,11 +18,19 @@ import kotlin.system.exitProcess
 val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
 //activity, 服务器版本号, 是否强制更新, apk下载地址
 val yVersionUpdate = YVersionUpdate(activity, 20, false, url)
+//或者activity, 服务器版本号, 是否强制更新, apk下载地址，服务器版版本名，更新说明
+//YVersionUpdate(this, 20, false, url,"1.1.2"，更新说明).checkUpdate()
+
 yVersionUpdate.checkUpdate()
 
-//或者activity, 服务器版本号, 是否强制更新, apk下载地址，服务器版版本名，更新说明
-YVersionUpdate(this, 20, false, url,"1.1.2"，更新说明).checkUpdate()
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    yVersionUpdate?.onActivityResult(requestCode, resultCode, data)
+}
 
+fun onDestroy() {
+    yVersionUpdate?.onDestroy()
+}
 */
 
 /* 权限说明
