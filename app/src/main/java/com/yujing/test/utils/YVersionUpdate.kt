@@ -230,5 +230,6 @@ class YVersionUpdate(
     //需要调用,注销广播
     fun onDestroy() {
         yNoticeDownload?.onDestroy()
+        YShow.finish()
     }
 }

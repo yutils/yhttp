@@ -3,11 +3,14 @@ package com.yujing.test.activity
 import android.content.Intent
 import com.google.gson.Gson
 import com.yujing.test.R
-import com.yujing.test.utils.YVersionUpdate
 import com.yujing.test.base.BaseActivity
 import com.yujing.test.bean.UU
 import com.yujing.test.bean.User
-import com.yujing.utils.*
+import com.yujing.test.utils.YVersionUpdate
+import com.yujing.utils.YConvert
+import com.yujing.utils.YPath
+import com.yujing.utils.YPicture
+import com.yujing.utils.YShow
 import com.yutils.http.YHttp
 import com.yutils.http.contract.YHttpDownloadFileListener
 import com.yutils.http.contract.YHttpListener
@@ -33,12 +36,12 @@ class MainActivity : BaseActivity() {
         button4.setOnClickListener { net4() }
         button5.text = "无"
         button5.setOnClickListener { net5() }
-        button6.text = "无"
-        button6.setOnClickListener { net6() }
-        button7.text = "App更新"
-        button7.setOnClickListener { update() }
-        button8.text = "文件下载"
-        button8.setOnClickListener { downLoad() }
+        button6.text = "App更新"
+        button6.setOnClickListener { update() }
+        button7.text = "文件下载"
+        button7.setOnClickListener { downLoad() }
+        button8.text = "终止下载"
+        button8.setOnClickListener { downLoadStop() }
     }
 
     //登录并保存session
@@ -109,30 +112,30 @@ class MainActivity : BaseActivity() {
     }
 
     private fun net5() {
-        net6()
-    }
-
-    private fun net6(aaa: String = "asd") {
 
     }
 
+    private var yVersionUpdate: YVersionUpdate? = null
     private fun update() {
         val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
-        val yVersionUpdate = YVersionUpdate(
+        yVersionUpdate = YVersionUpdate(
             this,
             20,
             false,
             url,
             "1.9.99",
             "\n修复了bug1引起的问题\n新增功能：aaa"
-        ).checkUpdate()
+        )
+        yVersionUpdate?.checkUpdate()
     }
 
+    private var download = YHttp.create()
     private fun downLoad() {
+        text3.text = "开始下载"
         val url = "https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe"
         var f = File(YPath.getFilePath(this, "download") + "/qq.exe")
 
-        YHttp.create().downloadFile(url, f, object :
+        download.downloadFile(url, f, object :
             YHttpDownloadFileListener {
             override fun progress(downloadSize: Int, fileSize: Int) {
                 val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
@@ -140,13 +143,28 @@ class MainActivity : BaseActivity() {
                 text2.text = "进度：$progress%"
             }
 
-            override fun success(file: File) {}
-            override fun fail(value: String) {}
+            override fun success(file: File) {
+                text3.text = "下载完成"
+            }
+
+            override fun fail(value: String) {
+                text3.text = value
+            }
         })
+    }
+
+    private fun downLoadStop() {
+        download.downloadFileStop()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         yPicture.onActivityResult(requestCode, resultCode, data)
+        yVersionUpdate?.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        yVersionUpdate?.onDestroy()
     }
 }

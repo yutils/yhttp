@@ -48,6 +48,15 @@ public class YHttpBase {
      * SessionId
      */
     protected String sessionId;
+    /**
+     * 下载是否停止
+     */
+    protected boolean downLoadStop = false;
+
+    //立即终止当前文件下载
+    public void downloadFileStop() {
+        downLoadStop = true;
+    }
 
     //ContentType
     public String getContentType() {
@@ -269,12 +278,14 @@ public class YHttpBase {
         byte[] buffer = new byte[1024 * 8];
         FileOutputStream fos = new FileOutputStream(file);
         InputStream inputStream = urlConn.getInputStream();
-        while ((len = inputStream.read(buffer)) != -1) {
+        downLoadStop = false;//这设置成false，在下载过程中downLoadIsStop的值可能会被改变
+        while (!downLoadStop && (len = inputStream.read(buffer)) != -1) {
             // 写到本地
             fos.write(buffer, 0, len);
             downloadSize += len;
             listener.progress(downloadSize, fileSize);
         }
+        if (downLoadStop) throw new Exception("终止下载");
         // 关闭连接
         urlConn.disconnect();
     }

@@ -22,6 +22,7 @@ import java.util.Map;
 
 /**
  * 网络请求类
+ *
  * @author yujing 2020年8月30日00:46:46
  * 详细说明和最新版请查看 https://github.com/yutils/yhttp
  * 优点：
@@ -704,7 +705,11 @@ public class YHttp extends YHttpBase {
                 } else if (e instanceof IOException) {
                     error("连接服务器失败", listener);
                 } else {
-                    error("请求失败 " + e.getMessage(), listener);
+                    if ("终止下载".equals(e.getMessage())) {
+                        error(e.getMessage(), listener);
+                    } else {
+                        error("请求失败 " + e.getMessage(), listener);
+                    }
                 }
             }));
         } else {
