@@ -6,11 +6,7 @@ import com.yujing.test.R
 import com.yujing.test.base.BaseActivity
 import com.yujing.test.bean.UU
 import com.yujing.test.bean.User
-import com.yujing.test.utils.YVersionUpdate
-import com.yujing.utils.YConvert
-import com.yujing.utils.YPath
-import com.yujing.utils.YPicture
-import com.yujing.utils.YShow
+import com.yujing.utils.*
 import com.yutils.http.YHttp
 import com.yutils.http.contract.YHttpDownloadFileListener
 import com.yutils.http.contract.YHttpListener
@@ -126,7 +122,7 @@ class MainActivity : BaseActivity() {
             "1.9.99",
             "\n修复了bug1引起的问题\n新增功能：aaa"
         )
-        yVersionUpdate?.checkUpdate()
+        yVersionUpdate?.update()
     }
 
     private var download = YHttp.create()
