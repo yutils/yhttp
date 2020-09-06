@@ -23,10 +23,10 @@ import java.util.Map;
 /**
  * 网络请求类
  *
- * @author yujing 2020年8月30日00:46:46
+ * @author yujing 2020年9月6日19:19:31
  * 详细说明和最新版请查看 https://github.com/yutils/yhttp
  * 优点：
- * 1.支持get，post请求，一行实现同步请求，一行实现异步请求
+ * 1.支持get，post，put，delete请求，一行实现同步请求，一行实现异步请求
  * 2.post请求可为字符串，map，byte[]
  * 3.直接返回请求结果为 字符串 或 对象 或 byte[]
  * 4.支持各种格式文件下载，回调进度条
@@ -173,39 +173,16 @@ public class YHttp extends YHttpBase {
         return this;
     }
 
+    //----------------------------------------------GET----------------------------------------------
+
     /**
      * get请求
      *
      * @param requestUrl url
      * @param listener   监听
      */
-    public void get(final String requestUrl, final YHttpListener listener) {
-        Thread thread = new Thread(() -> {
-            try {
-                if (showLog) println("请求地址：Post--->" + requestUrl);
-                byte[] bytes = get(requestUrl);
-                String result = new String(bytes);
-                if (showLog) println("请求结果：" + result);
-                //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                if (handler != null && handler instanceof Handler) {
-                    ((Handler) handler).post(new YRunnable(() -> {
-                        try {
-                            listener.success(bytes, result);
-                        } catch (Exception e) {
-                            listener.fail("处理异常");
-                            e.printStackTrace();
-                        }
-                    }));
-                } else {
-                    listener.success(bytes, result);
-                }
-            } catch (Exception e) {
-                exception(e, listener);
-            } finally {
-                YHttpThreadPool.shutdown();
-            }
-        });
-        YHttpThreadPool.add(thread);
+    public void get(final String requestUrl, YHttpListener listener) {
+        request(requestUrl, new byte[0], "GET", listener);
     }
 
     /**
@@ -215,56 +192,10 @@ public class YHttp extends YHttpBase {
      * @param listener   监听
      * @param <T>        类型
      */
-    public <T> void get(final String requestUrl, final YObjectListener<T> listener) {
-        get(requestUrl, new YHttpListener() {
-            @Override
-            public void success(byte[] bytes, String value) {
-                println("对象转换类型：" + listener.getType());
-                try {
-                    //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                    if (handler != null && handler instanceof Handler) {
-                        ((Handler) handler).post(new YRunnable(() -> {
-                            try {
-                                if (String.class.equals(listener.getType())) {
-                                    listener.success(bytes, (T) value);
-                                } else if ("byte[]".equals(listener.getType().toString())) {
-                                    listener.success(bytes, (T) bytes);
-                                } else {
-                                    Gson gson = new Gson();
-                                    T object = gson.fromJson(value, listener.getType());
-                                    listener.success(bytes, object);
-                                }
-                            } catch (Exception e) {
-                                listener.fail("处理异常");
-                                e.printStackTrace();
-                            }
-                        }));
-                    } else {
-                        if (String.class.equals(listener.getType())) {
-                            listener.success(bytes, (T) value);
-                        } else if ("byte[]".equals(listener.getType().toString())) {
-                            listener.success(bytes, (T) bytes);
-                        } else {
-                            Gson gson = new Gson();
-                            T object = gson.fromJson(value, listener.getType());
-                            listener.success(bytes, object);
-                        }
-                    }
-                } catch (java.lang.ClassCastException e) {
-                    listener.fail("对象转换失败");
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    listener.fail("处理异常");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void fail(String value) {
-                listener.fail(value);
-            }
-        });
+    public <T> void get(final String requestUrl, YObjectListener<T> listener) {
+        request(requestUrl, new byte[0], "GET", listener);
     }
+    //----------------------------------------------POST----------------------------------------------
 
     /**
      * post请求
@@ -273,8 +204,8 @@ public class YHttp extends YHttpBase {
      * @param paramsMap  key，value
      * @param listener   监听
      */
-    public void post(final String requestUrl, Map<String, Object> paramsMap, final YHttpListener listener) {
-        post(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), listener);
+    public void post(final String requestUrl, Map<String, Object> paramsMap, YHttpListener listener) {
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), "POST", listener);
     }
 
     /**
@@ -284,8 +215,8 @@ public class YHttp extends YHttpBase {
      * @param params     文本
      * @param listener   监听
      */
-    public void post(final String requestUrl, String params, final YHttpListener listener) {
-        post(requestUrl, params.getBytes(), listener);
+    public void post(final String requestUrl, String params, YHttpListener listener) {
+        request(requestUrl, params.getBytes(), "POST", listener);
     }
 
     /**
@@ -295,34 +226,8 @@ public class YHttp extends YHttpBase {
      * @param requestBytes bytes
      * @param listener     监听
      */
-    public void post(final String requestUrl, final byte[] requestBytes, final YHttpListener listener) {
-        Thread thread = new Thread(() -> {
-            try {
-                if (showLog) println("请求地址：Post--->" + requestUrl);
-                if (showLog && requestBytes != null) println("请求参数：" + new String(requestBytes));
-                byte[] bytes = post(requestUrl, requestBytes);
-                String result = new String(bytes);
-                if (showLog) println("请求结果：" + result);
-                //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                if (handler != null && handler instanceof Handler) {
-                    ((Handler) handler).post(new YRunnable(() -> {
-                        try {
-                            listener.success(bytes, result);
-                        } catch (Exception e) {
-                            listener.fail("处理异常");
-                            e.printStackTrace();
-                        }
-                    }));
-                } else {
-                    listener.success(bytes, result);
-                }
-            } catch (Exception e) {
-                exception(e, listener);
-            } finally {
-                YHttpThreadPool.shutdown();
-            }
-        });
-        YHttpThreadPool.add(thread);
+    public void post(final String requestUrl, byte[] requestBytes, YHttpListener listener) {
+        request(requestUrl, requestBytes, "POST", listener);
     }
 
     /**
@@ -334,7 +239,7 @@ public class YHttp extends YHttpBase {
      * @param <T>        类型
      */
     public <T> void post(String requestUrl, Map<String, Object> paramsMap, YObjectListener<T> listener) {
-        post(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), listener);
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), "POST", listener);
     }
 
     /**
@@ -346,7 +251,7 @@ public class YHttp extends YHttpBase {
      * @param <T>        类型
      */
     public <T> void post(String requestUrl, String params, YObjectListener<T> listener) {
-        post(requestUrl, params.getBytes(), listener);
+        request(requestUrl, params.getBytes(), "POST", listener);
     }
 
     /**
@@ -357,8 +262,253 @@ public class YHttp extends YHttpBase {
      * @param listener     监听
      * @param <T>          类型
      */
-    public <T> void post(String requestUrl, byte[] requestBytes, final YObjectListener<T> listener) {
-        post(requestUrl, requestBytes, new YHttpListener() {
+    public <T> void post(String requestUrl, byte[] requestBytes, YObjectListener<T> listener) {
+        request(requestUrl, requestBytes, "POST", listener);
+    }
+
+    //----------------------------------------------PUT----------------------------------------------
+
+    /**
+     * put请求
+     *
+     * @param requestUrl url
+     * @param paramsMap  key，value
+     * @param listener   监听
+     */
+    public void put(String requestUrl, Map<String, Object> paramsMap, YHttpListener listener) {
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), "PUT", listener);
+    }
+
+    /**
+     * put请求
+     *
+     * @param requestUrl url
+     * @param params     文本
+     * @param listener   监听
+     */
+    public void put(String requestUrl, String params, YHttpListener listener) {
+        request(requestUrl, params.getBytes(), "PUT", listener);
+    }
+
+    /**
+     * put请求
+     *
+     * @param requestUrl   url
+     * @param requestBytes bytes
+     * @param listener     监听
+     */
+    public void put(String requestUrl, byte[] requestBytes, YHttpListener listener) {
+        request(requestUrl, requestBytes, "PUT", listener);
+    }
+
+    /**
+     * put请求
+     *
+     * @param requestUrl url
+     * @param paramsMap  key，value
+     * @param listener   监听
+     * @param <T>        类型
+     */
+    public <T> void put(String requestUrl, Map<String, Object> paramsMap, YObjectListener<T> listener) {
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), "PUT", listener);
+    }
+
+    /**
+     * put请求
+     *
+     * @param requestUrl url
+     * @param params     文本
+     * @param listener   监听
+     * @param <T>        类型
+     */
+    public <T> void put(String requestUrl, String params, YObjectListener<T> listener) {
+        request(requestUrl, params.getBytes(), "PUT", listener);
+    }
+
+    /**
+     * put请求
+     *
+     * @param requestUrl   url
+     * @param requestBytes bytes
+     * @param listener     监听
+     * @param <T>          类型
+     */
+    public <T> void put(String requestUrl, byte[] requestBytes, YObjectListener<T> listener) {
+        request(requestUrl, requestBytes, "PUT", listener);
+    }
+
+    //----------------------------------------------DELETE----------------------------------------------
+
+    /**
+     * delete请求
+     *
+     * @param requestUrl url
+     * @param paramsMap  key，value
+     * @param listener   监听
+     */
+    public void delete(String requestUrl, Map<String, Object> paramsMap, YHttpListener listener) {
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), "DELETE", listener);
+    }
+
+    /**
+     * delete请求
+     *
+     * @param requestUrl url
+     * @param params     文本
+     * @param listener   监听
+     */
+    public void delete(String requestUrl, String params, YHttpListener listener) {
+        request(requestUrl, params.getBytes(), "DELETE", listener);
+    }
+
+    /**
+     * delete请求
+     *
+     * @param requestUrl   url
+     * @param requestBytes bytes
+     * @param listener     监听
+     */
+    public void delete(String requestUrl, byte[] requestBytes, YHttpListener listener) {
+        request(requestUrl, requestBytes, "DELETE", listener);
+    }
+
+    /**
+     * delete请求
+     *
+     * @param requestUrl url
+     * @param paramsMap  key，value
+     * @param listener   监听
+     * @param <T>        类型
+     */
+    public <T> void delete(String requestUrl, Map<String, Object> paramsMap, YObjectListener<T> listener) {
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), "DELETE", listener);
+    }
+
+    /**
+     * delete请求
+     *
+     * @param requestUrl url
+     * @param params     文本
+     * @param listener   监听
+     * @param <T>        类型
+     */
+    public <T> void delete(String requestUrl, String params, YObjectListener<T> listener) {
+        request(requestUrl, params.getBytes(), "DELETE", listener);
+    }
+
+    /**
+     * delete请求
+     *
+     * @param requestUrl   url
+     * @param requestBytes bytes
+     * @param listener     监听
+     * @param <T>          类型
+     */
+    public <T> void delete(String requestUrl, byte[] requestBytes, YObjectListener<T> listener) {
+        request(requestUrl, requestBytes, "DELETE", listener);
+    }
+
+    //----------------------------------------------request----------------------------------------------
+
+    /**
+     * request请求
+     *
+     * @param requestUrl    url
+     * @param paramsMap     key，value
+     * @param requestMethod 请求类型，只能是 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"
+     * @param listener      监听
+     */
+    public void request(String requestUrl, Map<String, Object> paramsMap, String requestMethod, YHttpListener listener) {
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), requestMethod, listener);
+    }
+
+    /**
+     * request请求
+     *
+     * @param requestUrl    url
+     * @param params        文本
+     * @param requestMethod 请求类型，只能是 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"
+     * @param listener      监听
+     */
+    public void request(String requestUrl, String params, String requestMethod, YHttpListener listener) {
+        request(requestUrl, params.getBytes(), requestMethod, listener);
+    }
+
+    /**
+     * request请求
+     *
+     * @param requestUrl    url
+     * @param paramsMap     key，value
+     * @param requestMethod 请求类型，只能是 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"
+     * @param listener      监听
+     * @param <T>           类型
+     */
+    public <T> void request(String requestUrl, Map<String, Object> paramsMap, String requestMethod, YObjectListener<T> listener) {
+        request(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), requestMethod, listener);
+    }
+
+    /**
+     * request请求
+     *
+     * @param requestUrl    url
+     * @param params        文本
+     * @param requestMethod 请求类型，只能是 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"
+     * @param listener      监听
+     * @param <T>           类型
+     */
+    public <T> void request(String requestUrl, String params, String requestMethod, YObjectListener<T> listener) {
+        request(requestUrl, params.getBytes(), requestMethod, listener);
+    }
+
+    /**
+     * request请求
+     *
+     * @param requestUrl    url
+     * @param requestBytes  byte数组
+     * @param requestMethod 请求类型，只能是 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"
+     * @param listener      监听
+     */
+    public void request(final String requestUrl, final byte[] requestBytes, String requestMethod, final YHttpListener listener) {
+        Thread thread = new Thread(() -> {
+            try {
+                if (showLog) println("请求地址：" + requestMethod + "--->" + requestUrl);
+                if (showLog && requestBytes != null) println("请求参数：" + new String(requestBytes));
+                byte[] bytes = request(requestUrl, requestBytes, requestMethod);
+                String result = new String(bytes);
+                if (showLog) println("请求结果：" + result);
+                //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
+                if (handler != null && handler instanceof Handler) {
+                    ((Handler) handler).post(new YRunnable(() -> {
+                        try {
+                            listener.success(bytes, result);
+                        } catch (Exception e) {
+                            listener.fail("处理异常");
+                            e.printStackTrace();
+                        }
+                    }));
+                } else {
+                    listener.success(bytes, result);
+                }
+            } catch (Exception e) {
+                exception(e, listener);
+            } finally {
+                YHttpThreadPool.shutdown();
+            }
+        });
+        YHttpThreadPool.add(thread);
+    }
+
+    /**
+     * request请求
+     *
+     * @param requestUrl    url
+     * @param requestBytes  byte数组
+     * @param requestMethod 请求类型，只能是 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"
+     * @param listener      监听
+     * @param <T>           类型
+     */
+    public <T> void request(String requestUrl, byte[] requestBytes, String requestMethod, final YObjectListener<T> listener) {
+        request(requestUrl, requestBytes, requestMethod, new YHttpListener() {
             @Override
             public void success(byte[] bytes, String value) {
                 println("对象转换类型：" + listener.getType());
@@ -416,7 +566,7 @@ public class YHttp extends YHttpBase {
      * @param fileMap    文件列表
      * @param listener   监听
      */
-    public void upload(final String requestUrl, Map<String, Object> paramsMap, Map<String, File> fileMap, YHttpListener listener) {
+    public void upload(String requestUrl, Map<String, Object> paramsMap, Map<String, File> fileMap, YHttpListener listener) {
         upload(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), fileMap, listener);
     }
 
@@ -428,7 +578,7 @@ public class YHttp extends YHttpBase {
      * @param fileMap    文件列表
      * @param listener   监听
      */
-    public void upload(final String requestUrl, String params, Map<String, File> fileMap, YHttpListener listener) {
+    public void upload(String requestUrl, String params, Map<String, File> fileMap, YHttpListener listener) {
         upload(requestUrl, params.getBytes(), fileMap, listener);
     }
 
@@ -440,7 +590,7 @@ public class YHttp extends YHttpBase {
      * @param fileMap      文件列表
      * @param listener     监听
      */
-    public void upload(final String requestUrl, final byte[] requestBytes, final Map<String, File> fileMap, YHttpListener listener) {
+    public void upload(String requestUrl, byte[] requestBytes, Map<String, File> fileMap, YHttpListener listener) {
         List<Upload> uploads = new ArrayList<>();
         for (Map.Entry<String, File> entry : fileMap.entrySet()) {
             if (entry.getValue() == null) continue;
@@ -458,7 +608,7 @@ public class YHttp extends YHttpBase {
      * @param uploads    上传的key，内容，文件名，contentType
      * @param listener   监听
      */
-    public void upload(final String requestUrl, Map<String, Object> paramsMap, List<Upload> uploads, YHttpListener listener) {
+    public void upload(String requestUrl, Map<String, Object> paramsMap, List<Upload> uploads, YHttpListener listener) {
         upload(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), uploads, listener);
     }
 
@@ -470,7 +620,7 @@ public class YHttp extends YHttpBase {
      * @param uploads    上传的key，内容，文件名，contentType
      * @param listener   监听
      */
-    public void upload(final String requestUrl, String params, List<Upload> uploads, YHttpListener listener) {
+    public void upload(String requestUrl, String params, List<Upload> uploads, YHttpListener listener) {
         upload(requestUrl, params.getBytes(), uploads, listener);
     }
 
@@ -521,7 +671,7 @@ public class YHttp extends YHttpBase {
      * @param listener   返回对象监听
      * @param <T>        类型
      */
-    public <T> void upload(final String requestUrl, Map<String, Object> paramsMap, final List<Upload> uploads, final YObjectListener<T> listener) {
+    public <T> void upload(String requestUrl, Map<String, Object> paramsMap, List<Upload> uploads, YObjectListener<T> listener) {
         upload(requestUrl, YHttpUtils.mapToParams(paramsMap).toString().getBytes(), uploads, listener);
     }
 
@@ -534,7 +684,7 @@ public class YHttp extends YHttpBase {
      * @param listener   返回对象监听
      * @param <T>        类型
      */
-    public <T> void upload(final String requestUrl, String params, final List<Upload> uploads, final YObjectListener<T> listener) {
+    public <T> void upload(String requestUrl, String params, List<Upload> uploads, YObjectListener<T> listener) {
         upload(requestUrl, params.getBytes(), uploads, listener);
     }
 
@@ -608,7 +758,7 @@ public class YHttp extends YHttpBase {
     public void downloadFile(final String requestUrl, final File file, final YHttpDownloadFileListener listener) {
         Thread thread = new Thread(() -> {
             try {
-                if (showLog) println("文件下载开始：\nGet--->" + requestUrl);
+                if (showLog) println("文件下载开始：\nGET--->" + requestUrl);
                 downloadFile(requestUrl, file, (size, sizeCount) -> {
                     //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
                     if (handler != null && handler instanceof Handler) {
@@ -625,7 +775,7 @@ public class YHttp extends YHttpBase {
                     }
                 });
                 if (showLog)
-                    println("文件下载完成：\nGet--->" + requestUrl + "\n保存路径：" + file.getPath());
+                    println("文件下载完成：\nGET--->" + requestUrl + "\n保存路径：" + file.getPath());
                 //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
                 if (handler != null && handler instanceof Handler) {
                     ((Handler) handler).post(new YRunnable(() -> {
@@ -658,7 +808,7 @@ public class YHttp extends YHttpBase {
         Thread thread = new Thread(() -> {
             try {
                 if (showLog)
-                    println("文件加载开始：\nGet--->" + requestUrl);
+                    println("文件加载开始：\nGET--->" + requestUrl);
                 byte[] bytes = load(requestUrl, listener::progress);
                 if (showLog)
                     println("文件加载完成");

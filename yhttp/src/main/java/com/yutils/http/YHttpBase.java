@@ -130,43 +130,7 @@ public class YHttpBase {
      * @throws Exception 异常
      */
     public byte[] get(String requestUrl) throws Exception {
-        // 打开一个HttpURLConnection连接
-        HttpURLConnection urlConn = YHttpURLConnectionFactory.create(requestUrl, crtSSL);
-        // 设置连接主机超时时间
-        urlConn.setConnectTimeout(connectTimeout);
-        //设置从主机读取数据超时
-        urlConn.setReadTimeout(connectTimeout);
-        // 设置是否使用缓存  默认是true
-        urlConn.setUseCaches(false);
-        // 设置为Post请求
-        urlConn.setRequestMethod("GET");
-        //设置客户端与服务连接类型
-        urlConn.setRequestProperty("accept", "*/*");
-        urlConn.setRequestProperty("connection", "Keep-Alive");
-        urlConn.setRequestProperty("Charset", "utf-8");
-        urlConn.setRequestProperty("Content-Type", contentType);
-        urlConn.setRequestProperty("User-Agent", userAgent);
-        if (mapSetRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
-                urlConn.setRequestProperty(entry.getKey(), entry.getValue());
-        if (mapAddRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapAddRequestProperty.entrySet())
-                urlConn.addRequestProperty(entry.getKey(), entry.getValue());
-        // 设置session
-        setSession(urlConn);
-        // 开始连接
-        urlConn.connect();
-        // 获取session
-        getSession(urlConn);
-        // 判断请求是否成功
-        int responseCode = urlConn.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new Exception("错误码：" + responseCode);
-        }
-        byte[] bytes = YHttpUtils.inputStreamToBytes(urlConn.getInputStream());
-        // 关闭连接
-        urlConn.disconnect();
-        return bytes;
+        return request(requestUrl, null, "GET");
     }
 
     /**
@@ -178,53 +142,84 @@ public class YHttpBase {
      * @throws Exception 异常
      */
     public byte[] post(String requestUrl, byte[] requestBytes) throws Exception {
+        return request(requestUrl, requestBytes, "POST");
+    }
+
+    /**
+     * put请求，同步柱塞试
+     *
+     * @param requestUrl   rul
+     * @param requestBytes 请求内容
+     * @return 请求结果
+     * @throws Exception 异常
+     */
+    public byte[] put(String requestUrl, byte[] requestBytes) throws Exception {
+        return request(requestUrl, requestBytes, "PUT");
+    }
+
+    /**
+     * delete请求，同步柱塞试
+     *
+     * @param requestUrl   rul
+     * @param requestBytes 请求内容
+     * @return 请求结果
+     * @throws Exception 异常
+     */
+    public byte[] delete(String requestUrl, byte[] requestBytes) throws Exception {
+        return request(requestUrl, requestBytes, "DELETE");
+    }
+
+    /**
+     * delete请求，同步柱塞试
+     *
+     * @param requestUrl    rul
+     * @param requestBytes  请求内容
+     * @param requestMethod 请求方式，只能是 "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"
+     * @return 请求结果
+     * @throws Exception 异常
+     */
+    public byte[] request(String requestUrl, byte[] requestBytes, String requestMethod) throws Exception {
         // 打开一个HttpURLConnection连接
         HttpURLConnection urlConn = YHttpURLConnectionFactory.create(requestUrl, crtSSL);
-        // 设置连接超时时间
-        urlConn.setConnectTimeout(connectTimeout);
         //设置从主机读取数据超时
         urlConn.setReadTimeout(connectTimeout);
-        //设置请求允许输入 默认是true
-        urlConn.setDoInput(true);
-        // Post请求不能使用缓存
-        urlConn.setUseCaches(false);
-        // 设置为Post请求
-        urlConn.setRequestMethod("POST");
-        //设置本次连接是否自动处理重定向
-        urlConn.setInstanceFollowRedirects(true);
-        // 配置请求Content-Type
-        urlConn.setRequestProperty("accept", "*/*");
-        urlConn.setRequestProperty("connection", "Keep-Alive");
-        urlConn.setRequestProperty("Charset", "utf-8");
-        urlConn.setRequestProperty("Content-Type", contentType);
-        urlConn.setRequestProperty("User-Agent", userAgent);
-        if (mapSetRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
-                urlConn.setRequestProperty(entry.getKey(), entry.getValue());
-        if (mapAddRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapAddRequestProperty.entrySet())
-                urlConn.addRequestProperty(entry.getKey(), entry.getValue());
-        // 设置session
-        setSession(urlConn);
-        // 发送POST请求必须设置如下两行
-        urlConn.setDoOutput(true);
-        urlConn.setDoInput(true);
-        // 开始连接
-        urlConn.connect();
-        // 发送请求参数
-        DataOutputStream dos = new DataOutputStream(urlConn.getOutputStream());
-        dos.write(requestBytes);
-        dos.flush();
-        dos.close();
-        // 获取session
-        getSession(urlConn);
-        // 判断请求是否成功
-        int responseCode = urlConn.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new Exception("错误码：" + responseCode);
+        setHttpURLConnection(urlConn, requestMethod);
+        if ("GET".equals(requestMethod)) {
+            // 设置session
+            setSession(urlConn);
+            // 开始连接
+            urlConn.connect();
+            // 获取session
+            getSession(urlConn);
+            // 判断请求是否成功
+            int responseCode = urlConn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new Exception("错误码：" + responseCode);
+            }
+            // 关闭连接
+        } else {
+            // 发送POST请求必须设置如下两行
+            urlConn.setDoOutput(true);
+            urlConn.setDoInput(true);
+            // 设置session
+            setSession(urlConn);
+            // 开始连接
+            urlConn.connect();
+            // 发送请求参数
+            DataOutputStream dos = new DataOutputStream(urlConn.getOutputStream());
+            dos.write(requestBytes);
+            dos.flush();
+            dos.close();
+            // 获取session
+            getSession(urlConn);
+            // 判断请求是否成功
+            int responseCode = urlConn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new Exception("错误码：" + responseCode);
+            }
         }
-        byte[] bytes = YHttpUtils.inputStreamToBytes(urlConn.getInputStream());
         // 关闭连接
+        byte[] bytes = YHttpUtils.inputStreamToBytes(urlConn.getInputStream());
         urlConn.disconnect();
         return bytes;
     }
@@ -240,27 +235,11 @@ public class YHttpBase {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void downloadFile(String requestUrl, File file, YHttpProgressListener listener) throws Exception {
         File parent = file.getParentFile();
-        if (!Objects.requireNonNull(parent).exists()) {
-            parent.mkdirs();
-        }
-        if (file.exists()) {
-            file.delete();// 删除存在文件
-        }
+        if (!Objects.requireNonNull(parent).exists()) parent.mkdirs();
+        if (file.exists()) file.delete();// 删除存在文件
         // 打开一个HttpURLConnection连接
         HttpURLConnection urlConn = YHttpURLConnectionFactory.create(requestUrl, crtSSL);
-        // 设置连接主机超时时间
-        urlConn.setConnectTimeout(connectTimeout);
-        urlConn.setAllowUserInteraction(true);
-        // 设置是否使用缓存
-        urlConn.setUseCaches(false);
-        //设置客户端与服务连接类型
-        urlConn.addRequestProperty("Connection", "Keep-Alive");
-        if (mapSetRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
-                urlConn.setRequestProperty(entry.getKey(), entry.getValue());
-        if (mapAddRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapAddRequestProperty.entrySet())
-                urlConn.addRequestProperty(entry.getKey(), entry.getValue());
+        setHttpURLConnection(urlConn, "GET");
         // 设置session
         setSession(urlConn);
         // 开始连接
@@ -301,25 +280,8 @@ public class YHttpBase {
     public byte[] load(String requestUrl, YHttpProgressListener listener) throws Exception {
         // 打开一个HttpURLConnection连接
         HttpURLConnection urlConn = YHttpURLConnectionFactory.create(requestUrl, crtSSL);
-        // 设置连接主机超时时间
-        urlConn.setConnectTimeout(connectTimeout);
         urlConn.setAllowUserInteraction(true);
-        // 设置是否使用缓存
-        urlConn.setUseCaches(false);
-        // 设置为Post请求
-        urlConn.setRequestMethod("GET");
-        //设置客户端与服务连接类型
-        urlConn.setRequestProperty("accept", "*/*");
-        urlConn.setRequestProperty("connection", "Keep-Alive");
-        urlConn.setRequestProperty("Charset", "utf-8");
-        urlConn.setRequestProperty("Content-Type", contentType);
-        urlConn.setRequestProperty("User-Agent", userAgent);
-        if (mapSetRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
-                urlConn.setRequestProperty(entry.getKey(), entry.getValue());
-        if (mapAddRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapAddRequestProperty.entrySet())
-                urlConn.addRequestProperty(entry.getKey(), entry.getValue());
+        setHttpURLConnection(urlConn, "GET");
         // 设置session
         setSession(urlConn);
         // 开始连接
@@ -379,31 +341,9 @@ public class YHttpBase {
     public byte[] upload(String requestUrl, byte[] requestBytes, List<Upload> uploads) throws Exception {
         // 打开一个HttpURLConnection连接
         HttpURLConnection urlConn = YHttpURLConnectionFactory.create(requestUrl, crtSSL);
-        // 设置连接超时时间
-        urlConn.setConnectTimeout(connectTimeout);
         //设置从主机读取数据超时
         urlConn.setReadTimeout(connectTimeout);
-        //设置请求允许输入 默认是true
-        urlConn.setDoInput(true);
-        // Post请求不能使用缓存
-        urlConn.setUseCaches(false);
-        // 设置为Post请求
-        urlConn.setRequestMethod("POST");
-        //设置本次连接是否自动处理重定向
-        urlConn.setInstanceFollowRedirects(true);
-        // 配置请求Content-Type
-        urlConn.setRequestProperty("accept", "*/*");
-        urlConn.setRequestProperty("connection", "Keep-Alive");
-        urlConn.setRequestProperty("Charset", "utf-8");
-        urlConn.setRequestProperty("Content-Type", contentType);
-        urlConn.setRequestProperty("User-Agent", userAgent);
-        urlConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
-        if (mapSetRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
-                urlConn.setRequestProperty(entry.getKey(), entry.getValue());
-        if (mapAddRequestProperty != null)
-            for (Map.Entry<String, String> entry : mapAddRequestProperty.entrySet())
-                urlConn.addRequestProperty(entry.getKey(), entry.getValue());
+        setHttpURLConnection(urlConn, "GET");
         // 设置session
         setSession(urlConn);
         // 发送POST请求必须设置如下两行
@@ -498,6 +438,39 @@ public class YHttpBase {
         out.write(("\r\n--" + BOUNDARY + "--\r\n").getBytes());// 结束标记
         out.flush();
         out.close();
+    }
+
+    /**
+     * HttpURLConnection 的一些基础设置
+     *
+     * @param urlConn       连接
+     * @param requestMethod 请求类型
+     * @throws Exception Exception
+     */
+    private void setHttpURLConnection(HttpURLConnection urlConn, String requestMethod) throws Exception {
+        // 设置连接超时时间
+        urlConn.setConnectTimeout(connectTimeout);
+        //设置请求允许输入 默认是true
+        urlConn.setDoInput(true);
+        // Post请求不能使用缓存
+        urlConn.setUseCaches(false);
+        // 设置为请求类型
+        if (requestMethod != null)
+            urlConn.setRequestMethod(requestMethod);
+        //设置本次连接是否自动处理重定向
+        urlConn.setInstanceFollowRedirects(true);
+        // 配置请求Content-Type
+        urlConn.setRequestProperty("accept", "*/*");
+        urlConn.setRequestProperty("connection", "Keep-Alive");
+        urlConn.setRequestProperty("Charset", "utf-8");
+        urlConn.setRequestProperty("Content-Type", contentType);
+        urlConn.setRequestProperty("User-Agent", userAgent);
+        if (mapSetRequestProperty != null)
+            for (Map.Entry<String, String> entry : mapSetRequestProperty.entrySet())
+                urlConn.setRequestProperty(entry.getKey(), entry.getValue());
+        if (mapAddRequestProperty != null)
+            for (Map.Entry<String, String> entry : mapAddRequestProperty.entrySet())
+                urlConn.addRequestProperty(entry.getKey(), entry.getValue());
     }
 
     /**

@@ -1,7 +1,7 @@
 # YHttp网络请求，原生JAVA实现，小巧快速
 ## 支持原生java工程，原生kotlin工程，安卓工程。
 ### 优点：
-> * 1.支持get，post请求，一行实现同步请求，一行实现异步请求
+> * 1.支持get，post，put，delete请求，一行实现同步请求，一行实现异步请求
 > * 2.post请求可为字符串，map，byte[]
 > * 3.直接返回请求结果为 字符串 或 对象 或 byte[]
 > * 4.支持各种格式文件下载，回调进度条
@@ -34,7 +34,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.yutils:yhttp:1.0.2'
+    implementation 'com.github.yutils:yhttp:1.0.4'
 }
 ```
 
