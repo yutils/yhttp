@@ -1,7 +1,11 @@
 package com.yujing.test.activity
 
 import android.content.Intent
+import android.graphics.Bitmap
 import com.google.gson.Gson
+import com.yujing.net.Ynet
+import com.yujing.net.Ynet.UrlType
+import com.yujing.net.YnetAndroid
 import com.yujing.test.R
 import com.yujing.test.base.BaseActivity
 import com.yujing.test.bean.UU
@@ -14,6 +18,7 @@ import com.yutils.http.contract.YObjectListener
 import com.yutils.http.model.Upload
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.util.*
 
 class MainActivity : BaseActivity() {
 
@@ -78,28 +83,66 @@ class MainActivity : BaseActivity() {
     private fun net3() {
         yPicture.gotoCamera(this)
         yPicture.setPictureFromCameraListener { uri, file, Flag ->
-            val bitmap = YConvert.uri2Bitmap(this, uri)
-            YShow.show(this, "正在上传")
-            val url = "http://192.168.6.9:8090/crash/upload/file"
-            val params: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "123456")
-            val list: MutableList<Upload> = ArrayList()
-            list.add(Upload("file1", file))
-            list.add(Upload("file2", "ABCDEF".toByteArray()).setFilename("abcd.txt"))
-            list.add(Upload("file3", bitmap))
+            var bitmap = YConvert.uri2Bitmap(this, uri)
+//            YShow.show(this, "正在上传")
+//            val url = "http://192.168.6.9:8090/crash/upload/file"
+//            val params: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "123456")
+//            val list: MutableList<Upload> = ArrayList()
+//            list.add(Upload("file1", file))
+//            list.add(Upload("file2", "ABCDEF".toByteArray()).setFilename("abcd.txt"))
+//            list.add(Upload("file3", bitmap))
+//
+//            //文件上传
+//            YHttp.create().setSessionId(session)
+//                .upload(url, params, list, object : YObjectListener<UU>() {
+//                    override fun success(bytes: ByteArray?, value: UU?) {
+//                        YShow.finish()
+//                        text2.text = value.toString()
+//                    }
+//
+//                    override fun fail(value: String?) {
+//                        YShow.finish()
+//                        text2.text = "失败：$value"
+//                    }
+//                })
 
-            //文件上传
-            YHttp.create().setSessionId(session)
-                .upload(url, params, list, object : YObjectListener<UU>() {
-                    override fun success(bytes: ByteArray?, value: UU?) {
-                        YShow.finish()
-                        text2.text = value.toString()
-                    }
 
-                    override fun fail(value: String?) {
-                        YShow.finish()
-                        text2.text = "失败：$value"
-                    }
-                })
+//            val list: MutableList<Upload> = ArrayList()
+//            list.add(Upload("file", bitmap))
+//            YShow.show(this, "正在上传...", "身份证正面照")
+//            YHttp.create().setSessionId(session)
+//                .upload(
+//                    "http://127.0.0.1:8008/garbage/imgUrl",
+//                    "",
+//                    list,
+//                    object : YObjectListener<UU>() {
+//                        override fun success(bytes: ByteArray?, value: UU?) {
+//                            YShow.finish()
+//                            text2.text = value.toString()
+//                        }
+//
+//                        override fun fail(value: String?) {
+//                            YShow.finish()
+//                            text2.text = "失败：$value"
+//                        }
+//                    })
+
+//            val paramsMap = HashMap<String, Any>()
+//            val uploadImg = HashMap<String, Bitmap>()
+//            bitmap=YBitmapUtil.zoom(bitmap,540,960)
+//            uploadImg["file"] = bitmap
+//            YnetAndroid.uploadBitmap(
+//                "http://127.0.0.1:8008/garbage/app/idNum/imgUrl", paramsMap, uploadImg,
+//                object : Ynet.YnetListener {
+//                    override fun success(value: String?) {
+//                        YLog.d(value)
+//                    }
+//
+//                    override fun fail(value: String?) {
+//                        YLog.d(value)
+//                    }
+//                }
+//            )
         }
     }
 

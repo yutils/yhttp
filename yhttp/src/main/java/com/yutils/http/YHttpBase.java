@@ -343,7 +343,8 @@ public class YHttpBase {
         HttpURLConnection urlConn = YHttpURLConnectionFactory.create(requestUrl, crtSSL);
         //设置从主机读取数据超时
         urlConn.setReadTimeout(connectTimeout);
-        setHttpURLConnection(urlConn, "GET");
+        setContentType("multipart/form-data; boundary=" + BOUNDARY);
+        setHttpURLConnection(urlConn, "POST");
         // 设置session
         setSession(urlConn);
         // 发送POST请求必须设置如下两行
