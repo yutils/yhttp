@@ -107,32 +107,32 @@ class MainActivity : BaseActivity() {
 //                })
 
 
-//            val list: MutableList<Upload> = ArrayList()
-//            list.add(Upload("file", bitmap))
-//            YShow.show(this, "正在上传...", "身份证正面照")
-//            YHttp.create().setSessionId(session)
-//                .upload(
-//                    "http://127.0.0.1:8008/garbage/imgUrl",
-//                    "",
-//                    list,
-//                    object : YObjectListener<UU>() {
-//                        override fun success(bytes: ByteArray?, value: UU?) {
-//                            YShow.finish()
-//                            text2.text = value.toString()
-//                        }
-//
-//                        override fun fail(value: String?) {
-//                            YShow.finish()
-//                            text2.text = "失败：$value"
-//                        }
-//                    })
+            val list: MutableList<Upload> = ArrayList()
+            list.add(Upload("file", bitmap))
+            YShow.show(this, "正在上传...", "身份证正面照")
+            YHttp.create().setSessionId(session).setRequestProperty("X-Session-Token", "4ea64bef2bb54a5fbbe3c8e28da8b92a")
+                .upload(
+                    "http://152.136.213.28:8008/garbage/app/idNum/imgUrl",
+                    "",
+                    list,
+                    object : YObjectListener<UU>() {
+                        override fun success(bytes: ByteArray?, value: UU?) {
+                            YShow.finish()
+                            text2.text = value.toString()
+                        }
+
+                        override fun fail(value: String?) {
+                            YShow.finish()
+                            text2.text = "失败：$value"
+                        }
+                    })
 
 //            val paramsMap = HashMap<String, Any>()
 //            val uploadImg = HashMap<String, Bitmap>()
 //            bitmap=YBitmapUtil.zoom(bitmap,540,960)
 //            uploadImg["file"] = bitmap
 //            YnetAndroid.uploadBitmap(
-//                "http://127.0.0.1:8008/garbage/app/idNum/imgUrl", paramsMap, uploadImg,
+//                "http://152.136.213.28:8008/garbage/app/idNum/imgUrl", paramsMap, uploadImg,
 //                object : Ynet.YnetListener {
 //                    override fun success(value: String?) {
 //                        YLog.d(value)

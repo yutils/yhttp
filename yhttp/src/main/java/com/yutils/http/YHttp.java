@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.yutils.http.contract.YHttpDownloadFileListener;
 import com.yutils.http.contract.YHttpListener;
 import com.yutils.http.contract.YHttpLoadListener;
+import com.yutils.http.contract.YHttpProgressListener;
 import com.yutils.http.contract.YObjectListener;
 import com.yutils.http.contract.YSessionListener;
 import com.yutils.http.model.Upload;
@@ -809,7 +810,21 @@ public class YHttp extends YHttpBase {
             try {
                 if (showLog)
                     println("文件加载开始：\nGET--->" + requestUrl);
-                byte[] bytes = load(requestUrl, listener::progress);
+                byte[] bytes = load(requestUrl, (size, sizeCount) -> {
+                    //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
+                    if (handler != null && handler instanceof Handler) {
+                        ((Handler) handler).post(new YRunnable(() -> {
+                            try {
+                                listener.progress(size, sizeCount);
+                            } catch (Exception e) {
+                                listener.fail("处理异常");
+                                e.printStackTrace();
+                            }
+                        }));
+                    } else {
+                        listener.progress(size, sizeCount);
+                    }
+                });
                 if (showLog)
                     println("文件加载完成");
                 //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
