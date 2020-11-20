@@ -8,7 +8,7 @@ import com.yutils.http.contract.YRun;
 public class YRunnable implements Runnable {
     private final YRun yRun;
 
-    YRunnable(YRun yRun) {
+    public YRunnable(YRun yRun) {
         this.yRun = yRun;
     }
 
