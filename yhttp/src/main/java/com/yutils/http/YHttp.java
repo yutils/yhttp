@@ -1,6 +1,7 @@
 package com.yutils.http;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -123,7 +124,7 @@ public class YHttp extends YHttpBase {
         //如果是能找到Handler对象，说明是安卓
         try {
             Class.forName("android.os.Handler");
-            handler = new Handler();
+            handler = new Handler(Looper.getMainLooper());
         } catch (Exception ignored) {
         }
     }
