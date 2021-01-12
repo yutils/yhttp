@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import com.yutils.http.contract.YHttpDownloadFileListener;
 import com.yutils.http.contract.YHttpListener;
 import com.yutils.http.contract.YHttpLoadListener;
-import com.yutils.http.contract.YHttpProgressListener;
 import com.yutils.http.contract.YObjectListener;
 import com.yutils.http.contract.YSessionListener;
 import com.yutils.http.model.Upload;
