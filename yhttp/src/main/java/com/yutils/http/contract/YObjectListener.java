@@ -14,15 +14,21 @@ import java.lang.reflect.Type;
  */
 
 public abstract class YObjectListener<T> {
-    private Type type = null;
+    private final Type type;
 
     protected YObjectListener() {
         //取出泛型具体类型
-        Type genericType = getClass().getGenericSuperclass();
-        if (genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
-            type = parameterizedType.getActualTypeArguments()[0];
+        type = getSuperclassTypeParameter(getClass());
+    }
+
+    //取出class的父类泛类类型
+    static Type getSuperclassTypeParameter(Class<?> subclass) {
+        Type superclass = subclass.getGenericSuperclass();
+        if (superclass instanceof Class) {
+            throw new RuntimeException("Missing type parameter.");
         }
+        ParameterizedType parameterized = (ParameterizedType) superclass;
+        return parameterized.getActualTypeArguments()[0];
     }
 
     /**

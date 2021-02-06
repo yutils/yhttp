@@ -152,14 +152,8 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
     private var yVersionUpdate: YVersionUpdate? = null
     private fun update() {
         val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
-        yVersionUpdate = YVersionUpdate(
-            this,
-            20,
-            false,
-            url,
-            "1.9.99",
-            "\n修复了bug1引起的问题\n新增功能：aaa"
-        )
+        YLog.i("url：$url")
+        yVersionUpdate = YVersionUpdate(this, 20, false, url, "1.9.99", "\n修复了bug1引起的问题\n新增功能：aaa")
         yVersionUpdate?.update()
     }
 

@@ -512,7 +512,7 @@ public class YHttp extends YHttpBase {
         request(requestUrl, requestBytes, requestMethod, new YHttpListener() {
             @Override
             public void success(byte[] bytes, String value) {
-                println("对象转换类型：" + listener.getType());
+                println("json转对象：" + listener.getType());
                 try {
                     //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
                     if (handler != null && handler instanceof Handler) {
@@ -702,7 +702,7 @@ public class YHttp extends YHttpBase {
         upload(requestUrl, requestBytes, uploads, new YHttpListener() {
             @Override
             public void success(byte[] bytes, String value) {
-                println("对象转换类型：" + listener.getType());
+                println("json转对象：" + listener.getType());
                 try {
                     //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
                     if (handler != null && handler instanceof Handler) {
