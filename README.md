@@ -14,7 +14,7 @@
 > * 11.自定义gson，如：可以直接序列化指定日期格式的内容
 > * 12.链式调用，代码更加简洁，可以不监听失败回调  
 
-采用java8.0，安卓10.0，API29，androidx。
+采用java8.0，安卓11.0，API30，androidx。
 
 
 ## 当前最新版：————>[![](https://jitpack.io/v/yutils/yhttp.svg)](https://jitpack.io/#yutils/yhttp)
