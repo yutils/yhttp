@@ -193,6 +193,65 @@ YHttp.create().downloadFile(url, f, object :
     override fun fail(value: String) {}//下载出错
 })
 ```
+链式请求举例
+``` java
+//链式请求 java
+String url = "http://192.168.6.9:8090/crash/user/login";
+Map<String, Object> hashMap = new HashMap<String, Object>();// = hashMapOf("name" to "yujing", "password" to "wtugeqh")
+hashMap.put("name", "yujing");
+hashMap.put("password", "wtugeqh");
+YHttp.create()
+        .url(url)
+        .post(hashMap)
+        .setSuccessListener((bytes, value) -> {
+            System.out.println("请求成功：" + value);
+        }).start();
+
+//链式,get
+YHttp
+.create()
+.url("http://192.168.6.9:8090/crash/")
+.get()
+.setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
+.setFailListener { value -> textView2.text = "失败：$value" }
+.start()
+
+//链式,post
+val url = "http://192.168.6.9:8090/crash/user/login"
+val gson=YJson.getGsonDate( "yyyy年MM月dd日 HH:mm:ss")
+val hashMap: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "wtugeqh")
+YHttp.create()
+    .url(url)
+    .post(hashMap)
+    .setGson(gson)
+    .setObjectListener(object : ObjectListener<User>() {
+        override fun success(bytes: ByteArray?, value: User?) {
+            textView2.text = "\n对象：${value.toString()}"
+        }
+    })
+    .setFailListener { value -> textView2.text = "失败：$value" }
+    .start()
+
+//链式,自定义请求
+YHttp.create()
+    .url(url)
+    .method("POST")
+    .setContentType("application/x-www-form-urlencoded;charset=utf-8")
+    .addRequestProperty("connection", "Keep-Alive")
+    .body(hashMap)
+    .setGson(gson)
+    .setSessionId(session)
+    .setCrtSSL("SSL证书内容")
+    .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
+    .setObjectListener(object : ObjectListener<User>() {
+        override fun success(bytes: ByteArray?, value: User?) {
+            textView2.text = "\n对象：${value.toString()}"
+        }
+    })
+    .setFailListener { value -> textView2.text = "失败：$value" }
+    .setSessionListener { sessionId -> session = sessionId }
+    .start()
+```
 
 ## 如安卓中使用注意添加权限：
 > * 必须权限 　　　　　　　　——>　　　　 android.permission.INTERNET

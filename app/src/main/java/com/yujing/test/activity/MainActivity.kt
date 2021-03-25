@@ -89,27 +89,29 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
             })
     }
 
-//    private fun 链式全部设置() {
-//        val url = "http://192.168.6.9:8090/crash/user/login"
-//        val gson = YJson.getGsonDate("yyyy年MM月dd日 HH:mm:ss")
-//        val hashMap: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "wtugeqh")
-//        YHttp.create()
-//            .url(url)
-//            .method("POST")
-//            .setContentType("application/x-www-form-urlencoded;charset=utf-8")
-//            .body(hashMap)
-//            .setGson(gson)
-//            .setSessionId(session)
-//            .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
-//            .setObjectListener(object : ObjectListener<User>() {
-//                override fun success(bytes: ByteArray?, value: User?) {
-//                    textView2.text = "对象：${value.toString()} \n转换成json：${Gson().toJson(value)}"
-//                }
-//            })
-//            .setFailListener { value -> textView2.text = "失败：$value" }
-//            .setSessionListener { sessionId -> session = sessionId }
-//            .start()
-//    }
+    private fun 链式全部设置() {
+        val url = "http://192.168.6.9:8090/crash/user/login"
+        val gson = YJson.getGsonDate("yyyy年MM月dd日 HH:mm:ss")
+        val hashMap: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "wtugeqh")
+        YHttp.create()
+            .url(url)
+            .method("POST")
+            .setContentType("application/x-www-form-urlencoded;charset=utf-8")
+            .addRequestProperty("connection", "Keep-Alive")
+            .body(hashMap)
+            .setGson(gson)
+            .setSessionId(session)
+            .setCrtSSL("SSL证书内容")
+            .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
+            .setObjectListener(object : ObjectListener<User>() {
+                override fun success(bytes: ByteArray?, value: User?) {
+                    textView2.text = "对象：${value.toString()} \n转换成json：${Gson().toJson(value)}"
+                }
+            })
+            .setFailListener { value -> textView2.text = "失败：$value" }
+            .setSessionListener { sessionId -> session = sessionId }
+            .start()
+    }
 
     private fun net4() {
         val url = "http://192.168.6.9:8090/crash/user/login"
@@ -147,6 +149,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
             .setFailListener { value -> textView2.text = "失败：$value" }
             .start()
     }
+
     //长传图片，并且上次参数请求
     private val yPicture: YPicture = YPicture()
     private fun netUp() {
