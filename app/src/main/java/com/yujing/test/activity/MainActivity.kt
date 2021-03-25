@@ -35,20 +35,14 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
         Create.button(binding.wll, "获取用户信息") {
             net2()
         }
-        Create.button(binding.wll, "拍照上传图片") {
-            net3()
-        }
-        Create.button(binding.wll, "链式请求get") {
+        Create.button(binding.wll, "链式-登录") {
             net4()
         }
-        Create.button(binding.wll, "链式请求get——Obj") {
+        Create.button(binding.wll, "链式-获取信息") {
             net5()
         }
-        Create.button(binding.wll, "链式请求post") {
-            net6()
-        }
-        Create.button(binding.wll, "链式请求post——Obj") {
-            net7()
+        Create.button(binding.wll, "拍照上传图片") {
+            netUp()
         }
         Create.button(binding.wll, "App更新") {
             update()
@@ -86,7 +80,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
         YHttp.create().setGson(gson).setSessionId(session)
             .get(url, object : YObjectListener<User>() {
                 override fun success(bytes: ByteArray?, value: User?) {
-                    textView2.text = "对象：${value.toString()} \n转换成json：${Gson().toJson(value)}"
+                    textView2.text = "\n对象：${value.toString()}"
                 }
 
                 override fun fail(value: String?) {
@@ -95,9 +89,67 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
             })
     }
 
+//    private fun 链式全部设置() {
+//        val url = "http://192.168.6.9:8090/crash/user/login"
+//        val gson = YJson.getGsonDate("yyyy年MM月dd日 HH:mm:ss")
+//        val hashMap: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "wtugeqh")
+//        YHttp.create()
+//            .url(url)
+//            .method("POST")
+//            .setContentType("application/x-www-form-urlencoded;charset=utf-8")
+//            .body(hashMap)
+//            .setGson(gson)
+//            .setSessionId(session)
+//            .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
+//            .setObjectListener(object : ObjectListener<User>() {
+//                override fun success(bytes: ByteArray?, value: User?) {
+//                    textView2.text = "对象：${value.toString()} \n转换成json：${Gson().toJson(value)}"
+//                }
+//            })
+//            .setFailListener { value -> textView2.text = "失败：$value" }
+//            .setSessionListener { sessionId -> session = sessionId }
+//            .start()
+//    }
+
+    private fun net4() {
+        val url = "http://192.168.6.9:8090/crash/user/login"
+        val gson = YJson.getGsonDate("yyyy年MM月dd日 HH:mm:ss")
+        val hashMap: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "wtugeqh")
+        YHttp.create()
+            .url(url)
+            .post(hashMap)
+            .setGson(gson)
+            .setSessionId(session)
+            .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
+            .setObjectListener(object : ObjectListener<User>() {
+                override fun success(bytes: ByteArray?, value: User?) {
+                    textView2.text = "\n对象：${value.toString()}"
+                }
+            })
+            .setFailListener { value -> textView2.text = "失败：$value" }
+            .setSessionListener { sessionId -> session = sessionId }
+            .start()
+    }
+
+    private fun net5() {
+        val gson = YJson.getGsonDate("yyyy年MM月dd日 HH:mm:ss")
+        YHttp.create()
+            .url("http://192.168.6.9:8090/crash/")
+            .get()
+            .setGson(gson)
+            .setSessionId(session)
+            .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
+            .setObjectListener(object : ObjectListener<User>() {
+                override fun success(bytes: ByteArray?, value: User?) {
+                    textView2.text = "\n对象：${value.toString()}"
+                }
+            })
+            .setFailListener { value -> textView2.text = "失败：$value" }
+            .start()
+    }
     //长传图片，并且上次参数请求
     private val yPicture: YPicture = YPicture()
-    private fun net3() {
+    private fun netUp() {
         yPicture.gotoCamera(this)
         yPicture.setPictureFromCameraListener { uri, file, Flag ->
             var bitmap = YConvert.uri2Bitmap(this, uri)
@@ -162,60 +214,6 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
 //                }
 //            )
         }
-    }
-
-    private fun net4() {
-        val url = "http://192.168.6.9:8090/crash/"
-        YHttp.create()
-            .get()
-            .url(url)
-            .setSuccessListener { bytes, value -> textView2.text = "成功：$value" }
-            .setFailListener { value -> textView2.text = "失败：$value" }
-            .start()
-    }
-
-    private fun net5() {
-        val url = "http://192.168.6.9:8090/crash/"
-        YHttp.create()
-            .get()
-            .url(url)
-            .setSuccessListener { bytes, value -> textView2.text = "成功：$value" }
-            .setFailListener { value -> textView2.text = "失败：$value" }
-            .start()
-    }
-
-    private fun net6() {
-        val url = "http://192.168.6.9:8090/crash/user/login"
-        val gson = YJson.getGsonDate("yyyy年MM月dd日 HH:mm:ss")
-        val hashMap: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "wtugeqh")
-        YHttp.create()
-            .url(url)
-            .post(hashMap)
-            .setGson(gson)
-            .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
-            .setObjectListener(object : ObjectListener<User>() {
-                override fun success(bytes: ByteArray?, value: User?) {
-                    textView2.text = "对象：${value.toString()} \n转换成json：${Gson().toJson(value)}"
-                }
-            })
-            .setFailListener { value -> textView2.text = "失败：$value" }
-            .start()
-    }
-
-    private fun net7() {
-        val gson = YJson.getGsonDate("yyyy年MM月dd日 HH:mm:ss")
-        YHttp.create()
-            .url("http://192.168.6.9:8090/crash/")
-            .get()
-            .setGson(gson)
-            .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
-            .setObjectListener(object : ObjectListener<User>() {
-                override fun success(bytes: ByteArray?, value: User?) {
-                    textView2.text = "对象：${value.toString()} \n转换成json：${gson.toJson(value)}"
-                }
-            })
-            .setFailListener { value -> textView2.text = "失败：$value" }
-            .start()
     }
 
     private var yVersionUpdate: YVersionUpdate? = null

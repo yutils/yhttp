@@ -480,7 +480,7 @@ public class YHttpBase {
      * @param httpURLConnection httpURLConnection
      */
     public void setSession(HttpURLConnection httpURLConnection) {
-        if (sessionId != null) {
+        if (sessionId != null && !sessionId.isEmpty()) {
             httpURLConnection.setRequestProperty("Cookie", "JSESSIONID=" + sessionId);
         }
     }

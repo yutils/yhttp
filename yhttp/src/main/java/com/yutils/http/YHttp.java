@@ -133,10 +133,28 @@ YHttp.create()
     .setGson(gson)
     .setObjectListener(object : ObjectListener<User>() {
         override fun success(bytes: ByteArray?, value: User?) {
-            textView2.text = "对象：${value.toString()} \n转换成json：${Gson().toJson(value)}"
+            textView2.text = "\n对象：${value.toString()}"
         }
     })
     .setFailListener { value -> textView2.text = "失败：$value" }
+    .start()
+
+//链式,自定义请求
+YHttp.create()
+    .url(url)
+    .method("POST")
+    .setContentType("application/x-www-form-urlencoded;charset=utf-8")
+    .body(hashMap)
+    .setGson(gson)
+    .setSessionId(session)
+    .setSuccessListener { bytes, value -> textView1.text = "成功：$value" }
+    .setObjectListener(object : ObjectListener<User>() {
+        override fun success(bytes: ByteArray?, value: User?) {
+            textView2.text = "\n对象：${value.toString()}"
+        }
+    })
+    .setFailListener { value -> textView2.text = "失败：$value" }
+    .setSessionListener { sessionId -> session = sessionId }
     .start()
  */
 public class YHttp<T> extends YHttpBase {
@@ -182,6 +200,12 @@ public class YHttp<T> extends YHttpBase {
         return this;
     }
 
+    /**
+     * @param contentType 设置contentType
+     *                    "application/x-www-form-urlencoded;charset=utf-8"
+     *                    "application/json;charset=utf-8"
+     * @return YHttp
+     */
     @Override
     public YHttp setContentType(String contentType) {
         super.setContentType(contentType);
