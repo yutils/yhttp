@@ -10,13 +10,13 @@ import java.lang.reflect.Type;
  * 所以只能采用abstract class。
  *
  * @param <T> 泛型
- * @author 余静 2020年7月28日10:23:26
+ * @author 余静 2021年3月25日10:00:11
  */
 
-public abstract class YObjectListener<T> extends ObjectListener<T> implements YFailListener {
+public abstract class ObjectListener<T> {
     private final Type type;
 
-    protected YObjectListener() {
+    protected ObjectListener() {
         //取出泛型具体类型
         type = getSuperclassTypeParameter(getClass());
     }

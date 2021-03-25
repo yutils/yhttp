@@ -29,7 +29,7 @@ import java.util.Objects;
  * @author yujing 2020年7月28日10:22:35
  */
 public class YHttpBase {
-    protected String contentType = "application/x-www-form-urlencoded;charset=utf-8";
+    protected String contentType = "application/x-www-form-urlencoded;charset=utf-8";//"application/json;charset=utf-8"
     protected int connectTimeout = 1000 * 20;
     //userAgent,Android     ---->   Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Mobile Safari/537.36
     //userAgent,iPhoneX     ---->   Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1

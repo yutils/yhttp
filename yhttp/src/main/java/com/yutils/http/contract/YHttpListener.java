@@ -5,8 +5,5 @@ package com.yutils.http.contract;
  *
  * @author 余静 2020年7月28日10:23:26
  */
-public interface YHttpListener {
-    void success(byte[] bytes, String value) throws Exception;
-
-    void fail(String value);
+public interface YHttpListener extends YSuccessListener, YFailListener {
 }

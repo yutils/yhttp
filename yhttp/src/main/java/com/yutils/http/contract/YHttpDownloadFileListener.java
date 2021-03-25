@@ -7,10 +7,6 @@ import java.io.File;
  *
  * @author yujing 2020年7月28日10:23:26
  */
-public interface YHttpDownloadFileListener {
-    void progress(int downloadSize, int fileSize);
-
+public interface YHttpDownloadFileListener extends YHttpProgressListener, YFailListener {
     void success(File file);
-
-    void fail(String value);
 }

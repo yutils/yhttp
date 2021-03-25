@@ -8,6 +8,24 @@ import java.io.File;
  * @author yujing 2020年8月28日12:08:34
  * 上传文件，检查到bytes不为null就走bytes，其次file，其次bitmap
  */
+/*
+//java文件上传
+String url = "http://192.168.6.9:8090/crash/upload/file";
+List<Upload> uploads = new ArrayList<>();
+uploads.add(new Upload("file1", new File("D:/1.jpg")));
+uploads.add(new Upload("file2", "ABCDEF".getBytes()).setFilename("abcd.txt"));
+
+YHttp.create().setSessionId(session).upload(url, "", uploads, new YHttpListener() {
+    @Override
+    public void success(byte[] bytes, String value){
+        System.out.println("上传成功：" + value);
+    }
+    @Override
+    public void fail(String value) {
+        System.out.println("上传失败：" + value);
+    }
+});
+ */
 public class Upload {
     /**
      * 上传文件的key值

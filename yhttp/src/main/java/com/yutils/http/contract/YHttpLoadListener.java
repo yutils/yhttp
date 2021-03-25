@@ -5,10 +5,6 @@ package com.yutils.http.contract;
  *
  * @author yujing 2020年7月28日10:23:26
  */
-public interface YHttpLoadListener {
-    void progress(int downloadSize, int size);
-
+public interface YHttpLoadListener extends YHttpProgressListener, YFailListener {
     void success(byte[] bytes);
-
-    void fail(String value);
 }
