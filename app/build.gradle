@@ -43,7 +43,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation ('com.github.yutils:yutils:1.4.3'){
+//    implementation 'com.github.yutils:yutils:1.4.9'
+
+    implementation ('com.github.yutils:yutils:1.4.9'){
         exclude group: 'com.github.yutils', module: 'yhttp'
     }
     implementation 'com.github.yutils:ycrash:1.0.3'
