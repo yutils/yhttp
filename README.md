@@ -39,6 +39,7 @@ allprojects {
 
 ```
 dependencies {
+    //更新地址  https://github.com/yutils/yhttp 建议过几天访问看下有没有新版本
     implementation 'com.kotlinx:yhttp:1.0.8'
 }
 ```
