@@ -1,7 +1,6 @@
 package com.yujing.test
 
 import android.app.Application
-import com.yujing.ycrash.YCrash
 
 class App : Application() {
     //标准单列
@@ -25,7 +24,5 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        YCrash.getInstance().init(this)
-        YCrash.getInstance().appName = "AppName"
     }
 }

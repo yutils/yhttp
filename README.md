@@ -17,7 +17,7 @@
 采用java8.0，安卓11.0，API30，androidx。
 
 
-## 当前最新版：————>[![](https://jitpack.io/v/yutils/yhttp.svg)](https://jitpack.io/#yutils/yhttp)
+## 已经从jitpack.io仓库移动至maven中央仓库 
 
 **[releases里面有JAR包。点击前往](https://github.com/yutils/yhttp/releases)**
 
@@ -28,16 +28,18 @@
 allprojects {
     repositories {
         ...
-        maven { url 'https://jitpack.io' }
+        mavenCentral()
+        //或者
+        maven { url 'https://kotlinx.com/repository' }
     }
 }
 ```
 
-2. 子module添加依赖，当前最新版：————> [![](https://jitpack.io/v/yutils/yhttp.svg)](https://jitpack.io/#yutils/yhttp)
+2. 子module添加依赖，当前最新版：————> 1.0.8
 
 ```
 dependencies {
-    implementation 'com.github.yutils:yhttp:1.0.8'
+    implementation 'com.kotlinx:yhttp:1.0.8'
 }
 ```
 

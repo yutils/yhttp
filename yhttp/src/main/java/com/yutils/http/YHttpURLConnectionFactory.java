@@ -8,6 +8,7 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -31,7 +32,7 @@ public class YHttpURLConnectionFactory {
      * @throws Exception Exception
      */
     public static HttpURLConnection create(String url, String crtSSL) throws Exception {
-        if (crtSSL != null && (url.toLowerCase().contains("https://"))) {
+        if (crtSSL != null && (url.toLowerCase(Locale.getDefault()).contains("https://"))) {
             HttpsURLConnection httpsURLConnection = (HttpsURLConnection) (new URL(url)).openConnection();
             httpsURLConnection.setSSLSocketFactory(createSSLSocketFactory(crtSSL));
             //屏蔽https验证

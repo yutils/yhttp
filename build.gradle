@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.5.0"
+    ext.kotlin_version = "1.5.21"
     repositories {
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/public' }
@@ -7,12 +7,12 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://jitpack.io' }
         google()
-        
+        mavenCentral()
+        //mavenLocal() //优先找本地
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0'
+        classpath 'com.android.tools.build:gradle:7.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
 
@@ -24,7 +24,7 @@ allprojects {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://jitpack.io' }
         google()
-        
+        mavenCentral()
     }
 }
 
