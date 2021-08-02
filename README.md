@@ -16,6 +16,12 @@
 
 采用java8.0，安卓11.0，API30，androidx。
 
+[![platform](https://img.shields.io/badge/platform-Android-lightgrey.svg)](https://developer.android.google.cn/studio/index.html)
+![Gradle](https://img.shields.io/badge/Gradle-7.1-brightgreen.svg)
+[![last commit](https://img.shields.io/github/last-commit/yutils/yhttp.svg)](https://github.com/yutils/yhttp/commits/master)
+![repo size](https://img.shields.io/github/repo-size/yutils/yhttp.svg)
+![android studio](https://img.shields.io/badge/android%20studio-2020.3.1-green.svg)
+[![maven](https://img.shields.io/badge/maven-address-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
 
 ## 已经从jitpack.io仓库移动至maven中央仓库 
 
@@ -32,7 +38,7 @@ allprojects {
 }
 ```
 
-2. 子module添加依赖，当前最新版：————> 1.0.8
+2. [子module添加依赖，当前最新版：————> 1.0.8　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.0.8-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
 
 ```
 dependencies {
