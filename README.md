@@ -38,12 +38,12 @@ allprojects {
 }
 ```
 
-2. [子module添加依赖，当前最新版：————> 1.0.8　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.0.8-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
+2. [子module添加依赖，当前最新版：————> 1.1.0　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.1.0-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
 
 ```
 dependencies {
     //更新地址  https://github.com/yutils/yhttp 建议过几天访问看下有没有新版本
-    implementation 'com.kotlinx:yhttp:1.0.8'
+    implementation 'com.kotlinx:yhttp:1.1.0'
 }
 ```
 

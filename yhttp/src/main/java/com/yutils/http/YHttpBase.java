@@ -1,7 +1,5 @@
 package com.yutils.http;
 
-import android.graphics.Bitmap;
-
 import com.yutils.http.contract.YHttpProgressListener;
 import com.yutils.http.contract.YSessionListener;
 import com.yutils.http.model.Upload;
@@ -423,12 +421,8 @@ public class YHttpBase {
                             strBuf.append("Content-Type:").append(item.getContentType()).append("\r\n\r\n");
                             out.write(strBuf.toString().getBytes());
                             // bitmap转Bytes
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            if (item.getBitmap() instanceof Bitmap) {
-                                Bitmap bitmap = (Bitmap) item.getBitmap();
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
-                                out.write(baos.toByteArray());
-                            }
+                            byte[] bytes = Android.bitmapToByteArray(item.getBitmap());
+                            out.write(bytes);
                         }
                     } catch (Exception e) {
                         System.err.println("上传Bitmap异常：" + e.getMessage());

@@ -33,7 +33,9 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
             net1()
         }
         Create.button(binding.wll, "获取用户信息") {
-            net2()
+            Thread{
+                net2()
+            }.start()
         }
         Create.button(binding.wll, "链式-登录") {
             net4()
@@ -62,7 +64,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
         val hashMap: HashMap<String, Any> = hashMapOf("name" to "yujing", "password" to "wtugeqh")
         YHttp.create().setSessionListener { sessionId ->
             session = sessionId
-            runOnUiThread { textView1.text = "sessionId：$sessionId" }
+            textView1.text = "sessionId：$sessionId"
         }.post(url, hashMap, object : YHttpListener {
             override fun success(bytes: ByteArray?, value: String?) {
                 textView2.text = "成功：$value"

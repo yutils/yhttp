@@ -1,9 +1,5 @@
 package com.yutils.http;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.yutils.http.contract.ObjectListener;
 import com.yutils.http.contract.YFailListener;
@@ -19,6 +15,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -173,7 +171,6 @@ YHttp.create()
  */
 public class YHttp<T> extends YHttpBase {
     private static volatile boolean showLog = true;
-    private Object handler;//防止对方不是安卓项目
     private Object gson;//防止对方没引用Gson时完全无法使用
     private String requestUrl;//请求url
     private byte[] requestBytes;//请求内容
@@ -192,12 +189,6 @@ public class YHttp<T> extends YHttpBase {
     }
 
     public YHttp() {
-        //如果是能找到Handler对象，说明是安卓
-        try {
-            Class.forName("android.os.Handler");
-            handler = new Handler(Looper.getMainLooper());
-        } catch (Exception ignored) {
-        }
     }
 
     /**
@@ -275,6 +266,7 @@ public class YHttp<T> extends YHttpBase {
      * 如：
      * "connection","Keep-Alive"
      * "Charset","utf-8"
+     *
      * @param key   key
      * @param value value
      * @return YHttp
@@ -290,6 +282,7 @@ public class YHttp<T> extends YHttpBase {
      * 如：
      * "connection","Keep-Alive"
      * "Charset","utf-8"
+     *
      * @param key   key
      * @param value value
      * @return YHttp
@@ -566,33 +559,22 @@ public class YHttp<T> extends YHttpBase {
                     println("json转对象：" + objectListener.getType());
                     try {
                         //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                        if (handler != null && handler instanceof Handler) {
-                            ((Handler) handler).post(new YRunnable(() -> {
-                                try {
-                                    if (String.class.equals(objectListener.getType())) {
-                                        objectListener.success(bytes, (T) value);
-                                    } else if ("byte[]".equals(objectListener.getType().toString())) {
-                                        objectListener.success(bytes, (T) bytes);
-                                    } else {
-                                        T object = getGson().fromJson(value, objectListener.getType());
-                                        objectListener.success(bytes, object);
-                                    }
-                                } catch (Exception e) {
-                                    if (failListener != null)
-                                        failListener.fail("处理异常");
-                                    e.printStackTrace();
+                        Android.runOnUiThread(() -> {
+                            try {
+                                if (String.class.equals(objectListener.getType())) {
+                                    objectListener.success(bytes, (T) value);
+                                } else if ("byte[]".equals(objectListener.getType().toString())) {
+                                    objectListener.success(bytes, (T) bytes);
+                                } else {
+                                    T object = getGson().fromJson(value, objectListener.getType());
+                                    objectListener.success(bytes, object);
                                 }
-                            }));
-                        } else {
-                            if (String.class.equals(objectListener.getType())) {
-                                objectListener.success(bytes, (T) value);
-                            } else if ("byte[]".equals(objectListener.getType().toString())) {
-                                objectListener.success(bytes, (T) bytes);
-                            } else {
-                                T object = getGson().fromJson(value, objectListener.getType());
-                                objectListener.success(bytes, object);
+                            } catch (Exception e) {
+                                if (failListener != null)
+                                    failListener.fail("处理异常");
+                                e.printStackTrace();
                             }
-                        }
+                        });
                     } catch (java.lang.ClassCastException e) {
                         if (failListener != null)
                             failListener.fail("对象转换失败");
@@ -910,25 +892,21 @@ public class YHttp<T> extends YHttpBase {
                 byte[] bytes = request(requestUrl, requestBytes, requestMethod);
                 String result = new String(bytes);
                 if (showLog) println("请求结果：" + result);
-                //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                if (handler != null && handler instanceof Handler) {
-                    ((Handler) handler).post(new YRunnable(() -> {
-                        try {
-                            listener.success(bytes, result);
-                        } catch (Exception e) {
-                            listener.fail("处理异常");
-                            e.printStackTrace();
-                        }
-                    }));
-                } else {
-                    listener.success(bytes, result);
-                }
+                Android.runOnUiThread(() -> {
+                    try {
+                        listener.success(bytes, result);
+                    } catch (Exception e) {
+                        listener.fail("处理异常");
+                        e.printStackTrace();
+                    }
+                });
             } catch (Exception e) {
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
             }
         });
+        thread.setName("request请求:" + requestUrl);
         YHttpThreadPool.add(thread);
     }
 
@@ -946,33 +924,21 @@ public class YHttp<T> extends YHttpBase {
             public void success(byte[] bytes, String value) {
                 println("json转对象：" + listener.getType());
                 try {
-                    //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                    if (handler != null && handler instanceof Handler) {
-                        ((Handler) handler).post(new YRunnable(() -> {
-                            try {
-                                if (String.class.equals(listener.getType())) {
-                                    listener.success(bytes, (T) value);
-                                } else if ("byte[]".equals(listener.getType().toString())) {
-                                    listener.success(bytes, (T) bytes);
-                                } else {
-                                    T object = getGson().fromJson(value, listener.getType());
-                                    listener.success(bytes, object);
-                                }
-                            } catch (Exception e) {
-                                listener.fail("处理异常");
-                                e.printStackTrace();
+                    Android.runOnUiThread(() -> {
+                        try {
+                            if (String.class.equals(listener.getType())) {
+                                listener.success(bytes, (T) value);
+                            } else if ("byte[]".equals(listener.getType().toString())) {
+                                listener.success(bytes, (T) bytes);
+                            } else {
+                                T object = getGson().fromJson(value, listener.getType());
+                                listener.success(bytes, object);
                             }
-                        }));
-                    } else {
-                        if (String.class.equals(listener.getType())) {
-                            listener.success(bytes, (T) value);
-                        } else if ("byte[]".equals(listener.getType().toString())) {
-                            listener.success(bytes, (T) bytes);
-                        } else {
-                            T object = getGson().fromJson(value, listener.getType());
-                            listener.success(bytes, object);
+                        } catch (Exception e) {
+                            listener.fail("处理异常");
+                            e.printStackTrace();
                         }
-                    }
+                    });
                 } catch (java.lang.ClassCastException e) {
                     listener.fail("对象转换失败");
                     e.printStackTrace();
@@ -1072,25 +1038,21 @@ public class YHttp<T> extends YHttpBase {
                 byte[] bytes = upload(requestUrl, requestBytes, uploads);
                 String result = new String(bytes);
                 if (showLog) println("文件上传完成：" + result);
-                //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                if (handler != null && handler instanceof Handler) {
-                    ((Handler) handler).post(new YRunnable(() -> {
-                        try {
-                            listener.success(bytes, result);
-                        } catch (Exception e) {
-                            listener.fail("处理异常");
-                            e.printStackTrace();
-                        }
-                    }));
-                } else {
-                    listener.success(bytes, result);
-                }
+                Android.runOnUiThread(() -> {
+                    try {
+                        listener.success(bytes, result);
+                    } catch (Exception e) {
+                        listener.fail("处理异常");
+                        e.printStackTrace();
+                    }
+                });
             } catch (Exception e) {
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
             }
         });
+        thread.setName("文件上传post:" + requestUrl);
         YHttpThreadPool.add(thread);
     }
 
@@ -1133,33 +1095,21 @@ public class YHttp<T> extends YHttpBase {
             public void success(byte[] bytes, String value) {
                 println("json转对象：" + listener.getType());
                 try {
-                    //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                    if (handler != null && handler instanceof Handler) {
-                        ((Handler) handler).post(new YRunnable(() -> {
-                            try {
-                                if (String.class.equals(listener.getType())) {
-                                    listener.success(bytes, (T) value);
-                                } else if ("byte[]".equals(listener.getType().toString())) {
-                                    listener.success(bytes, (T) bytes);
-                                } else {
-                                    T object = getGson().fromJson(value, listener.getType());
-                                    listener.success(bytes, object);
-                                }
-                            } catch (Exception e) {
-                                listener.fail("处理异常");
-                                e.printStackTrace();
+                    Android.runOnUiThread(() -> {
+                        try {
+                            if (String.class.equals(listener.getType())) {
+                                listener.success(bytes, (T) value);
+                            } else if ("byte[]".equals(listener.getType().toString())) {
+                                listener.success(bytes, (T) bytes);
+                            } else {
+                                T object = getGson().fromJson(value, listener.getType());
+                                listener.success(bytes, object);
                             }
-                        }));
-                    } else {
-                        if (String.class.equals(listener.getType())) {
-                            listener.success(bytes, (T) value);
-                        } else if ("byte[]".equals(listener.getType().toString())) {
-                            listener.success(bytes, (T) bytes);
-                        } else {
-                            T object = getGson().fromJson(value, listener.getType());
-                            listener.success(bytes, object);
+                        } catch (Exception e) {
+                            listener.fail("处理异常");
+                            e.printStackTrace();
                         }
-                    }
+                    });
                 } catch (java.lang.ClassCastException e) {
                     listener.fail("对象转换失败");
                     e.printStackTrace();
@@ -1188,41 +1138,33 @@ public class YHttp<T> extends YHttpBase {
             try {
                 if (showLog) println("文件下载开始：\nGET--->" + requestUrl);
                 downloadFile(requestUrl, file, (size, sizeCount) -> {
-                    //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                    if (handler != null && handler instanceof Handler) {
-                        ((Handler) handler).post(new YRunnable(() -> {
-                            try {
-                                listener.progress(size, sizeCount);
-                            } catch (Exception e) {
-                                listener.fail("处理异常");
-                                e.printStackTrace();
-                            }
-                        }));
-                    } else {
-                        listener.progress(size, sizeCount);
-                    }
-                });
-                if (showLog)
-                    println("文件下载完成：\nGET--->" + requestUrl + "\n保存路径：" + file.getPath());
-                //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                if (handler != null && handler instanceof Handler) {
-                    ((Handler) handler).post(new YRunnable(() -> {
+                    Android.runOnUiThread(() -> {
                         try {
-                            listener.success(file);
+                            listener.progress(size, sizeCount);
                         } catch (Exception e) {
                             listener.fail("处理异常");
                             e.printStackTrace();
                         }
-                    }));
-                } else {
-                    listener.success(file);
-                }
+                    });
+                });
+
+                if (showLog)
+                    println("文件下载完成：\nGET--->" + requestUrl + "\n保存路径：" + file.getPath());
+                Android.runOnUiThread(() -> {
+                    try {
+                        listener.success(file);
+                    } catch (Exception e) {
+                        listener.fail("处理异常");
+                        e.printStackTrace();
+                    }
+                });
             } catch (Exception e) {
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
             }
         });
+        thread.setName("文件下载,get:" + requestUrl);
         YHttpThreadPool.add(thread);
     }
 
@@ -1238,41 +1180,32 @@ public class YHttp<T> extends YHttpBase {
                 if (showLog)
                     println("文件加载开始：\nGET--->" + requestUrl);
                 byte[] bytes = load(requestUrl, (size, sizeCount) -> {
-                    //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                    if (handler != null && handler instanceof Handler) {
-                        ((Handler) handler).post(new YRunnable(() -> {
-                            try {
-                                listener.progress(size, sizeCount);
-                            } catch (Exception e) {
-                                listener.fail("处理异常");
-                                e.printStackTrace();
-                            }
-                        }));
-                    } else {
-                        listener.progress(size, sizeCount);
-                    }
-                });
-                if (showLog)
-                    println("文件加载完成");
-                //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-                if (handler != null && handler instanceof Handler) {
-                    ((Handler) handler).post(new YRunnable(() -> {
+                    Android.runOnUiThread(() -> {
                         try {
-                            listener.success(bytes);
+                            listener.progress(size, sizeCount);
                         } catch (Exception e) {
                             listener.fail("处理异常");
                             e.printStackTrace();
                         }
-                    }));
-                } else {
-                    listener.success(bytes);
-                }
+                    });
+                });
+                if (showLog)
+                    println("文件加载完成");
+                Android.runOnUiThread(() -> {
+                    try {
+                        listener.success(bytes);
+                    } catch (Exception e) {
+                        listener.fail("处理异常");
+                        e.printStackTrace();
+                    }
+                });
             } catch (Exception e) {
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
             }
         });
+        thread.setName("加载get请求，回调进度:" + requestUrl);
         YHttpThreadPool.add(thread);
     }
 
@@ -1283,28 +1216,7 @@ public class YHttp<T> extends YHttpBase {
      * @param listener 监听
      */
     void exception(Exception e, Object listener) {
-        //如果是安卓就用handler调回到主线程，如果是普通JAVA工程，直接回调到线程
-        if (handler != null && handler instanceof Handler) {
-            ((Handler) handler).post(new YRunnable(() -> {
-                if (e instanceof MalformedURLException) {
-                    error("URL地址不规范", listener);
-                } else if (e instanceof java.net.SocketTimeoutException) {
-                    error("网络连接超时", listener);
-                } else if (e instanceof UnsupportedEncodingException) {
-                    error("不支持的编码", listener);
-                } else if (e instanceof FileNotFoundException) {
-                    error("找不到该地址", listener);
-                } else if (e instanceof IOException) {
-                    error("连接服务器失败", listener);
-                } else {
-                    if ("终止下载".equals(e.getMessage())) {
-                        error(e.getMessage(), listener);
-                    } else {
-                        error("请求失败 " + e.getMessage(), listener);
-                    }
-                }
-            }));
-        } else {
+        Android.runOnUiThread(() -> {
             if (e instanceof MalformedURLException) {
                 error("URL地址不规范", listener);
             } else if (e instanceof java.net.SocketTimeoutException) {
@@ -1316,10 +1228,13 @@ public class YHttp<T> extends YHttpBase {
             } else if (e instanceof IOException) {
                 error("连接服务器失败", listener);
             } else {
-                error("请求失败 " + e.getMessage(), listener);
+                if ("终止下载".equals(e.getMessage())) {
+                    error(e.getMessage(), listener);
+                } else {
+                    error("请求失败 " + e.getMessage(), listener);
+                }
             }
-        }
-
+        });
     }
 
     /**
@@ -1363,7 +1278,7 @@ public class YHttp<T> extends YHttpBase {
     void printlnE(String str) {
         try {
             Class.forName("android.util.Log");
-            Log.e("YHttp", str);
+            Android.Log("e", "YHttp", str);
         } catch (Exception e) {
             System.err.println(str);
         }
@@ -1384,12 +1299,12 @@ public class YHttp<T> extends YHttpBase {
             //剩下的文本还是大于规定长度则继续重复截取并输出
             if (strLength > end) {
                 String s = tag + " " + i;
-                Log.d(s, msg.substring(start, end));
+                Android.Log("d", s, msg.substring(start, end));
                 start = end;
                 end = end + LOG_MAX_LENGTH;
             } else {
                 String s = i == 0 ? tag : tag + " " + i;
-                Log.d(s, msg.substring(start, strLength));
+                Android.Log("d", s, msg.substring(start, strLength));
                 break;
             }
         }
