@@ -1262,10 +1262,9 @@ public class YHttp<T> extends YHttpBase {
      * @param str 日志
      */
     void println(String str) {
-        try {
-            Class.forName("android.util.Log");
-            println("YHttp", str);
-        } catch (Exception e) {
+        if (Android.isAndroid()) {
+            println("d", "YHttp", str);
+        } else {
             System.out.println(str);
         }
     }
@@ -1276,10 +1275,9 @@ public class YHttp<T> extends YHttpBase {
      * @param str 错误内容
      */
     void printlnE(String str) {
-        try {
-            Class.forName("android.util.Log");
-            Android.Log("e", "YHttp", str);
-        } catch (Exception e) {
+        if (Android.isAndroid()) {
+            println("e", "YHttp", str);
+        } else {
             System.err.println(str);
         }
     }
@@ -1290,7 +1288,7 @@ public class YHttp<T> extends YHttpBase {
      * @param tag tag
      * @param msg 内容
      */
-    private static void println(String tag, String msg) {
+    private static void println(String type, String tag, String msg) {
         int LOG_MAX_LENGTH = 2000;
         int strLength = msg.length();
         int start = 0;
@@ -1299,12 +1297,12 @@ public class YHttp<T> extends YHttpBase {
             //剩下的文本还是大于规定长度则继续重复截取并输出
             if (strLength > end) {
                 String s = tag + " " + i;
-                Android.Log("d", s, msg.substring(start, end));
+                Android.Log(type, s, msg.substring(start, end));
                 start = end;
                 end = end + LOG_MAX_LENGTH;
             } else {
                 String s = i == 0 ? tag : tag + " " + i;
-                Android.Log("d", s, msg.substring(start, strLength));
+                Android.Log(type, s, msg.substring(start, strLength));
                 break;
             }
         }

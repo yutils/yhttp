@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 
 /**
  * 安卓常用方法，反射调用
+ *
  * @author yujing 2021年9月11日15:56:45
  */
 /*
@@ -85,7 +86,6 @@ public class Android {
             return true;
         } catch (Exception e) {
             Log("e", "错误", e.getMessage());
-            e.printStackTrace();
         }
         return false;
     }
@@ -131,8 +131,8 @@ public class Android {
             method.invoke(null, tag, msg, throwable);
             return true;
         } catch (Exception e) {
-            System.out.println("打印日志错误:" + e.getMessage() + "\n日志:\ttype:" + type + "\ttag:" + tag + "\tmsg:" + msg);
-            e.printStackTrace();
+            //System.out.println("打印日志错误:" + e.getMessage() + "\n日志:\ttype:" + type + "\ttag:" + tag + "\tmsg:" + msg);
+            System.out.println("type:" + type + "\ttag:" + tag + "\tmsg:" + msg + ((throwable == null) ? "" : ("\tthrowable:" + throwable.toString())));
         }
         return false;
     }
@@ -159,7 +159,6 @@ public class Android {
                     mShow.invoke(obj);
                 } catch (Exception e) {
                     System.out.println("显示Toast错误:" + e.getMessage() + "\nmsg:" + msg);
-                    e.printStackTrace();
                 }
             }
         });
@@ -194,7 +193,6 @@ public class Android {
             return baos.toByteArray();
         } catch (Exception e) {
             System.out.println("转换bitmap错误:" + e.getMessage());
-            e.printStackTrace();
         }
         return null;
     }

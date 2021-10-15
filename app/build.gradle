@@ -43,7 +43,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation ('com.kotlinx:yutils:1.7.0'){
+    implementation ('com.kotlinx:yutils:1.7.4'){
         exclude group: 'com.kotlinx', module: 'yhttp'
     }
 
@@ -51,7 +51,7 @@ dependencies {
     implementation project(':yhttp')
 
     //gson <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.google.code.gson:gson:2.8.8'
     //对应的是com.android.support:recyclerview-v7:28.0.2
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 

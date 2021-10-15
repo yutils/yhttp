@@ -49,13 +49,4 @@ public class YHttpUtils {
         bs.flush();
         return bs.toByteArray();
     }
-
-    public static boolean findClass(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (Exception ignored) {
-            return false;
-        }
-    }
 }
