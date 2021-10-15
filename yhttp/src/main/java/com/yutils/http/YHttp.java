@@ -571,7 +571,7 @@ public class YHttp<T> extends YHttpBase {
                                 }
                             } catch (Exception e) {
                                 if (failListener != null)
-                                    failListener.fail("处理异常");
+                                    failListener.fail("异常：" + e.getMessage());
                                 e.printStackTrace();
                             }
                         });
@@ -581,7 +581,7 @@ public class YHttp<T> extends YHttpBase {
                         e.printStackTrace();
                     } catch (Exception e) {
                         if (failListener != null)
-                            failListener.fail("处理异常");
+                            failListener.fail("异常：" + e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -896,7 +896,7 @@ public class YHttp<T> extends YHttpBase {
                     try {
                         listener.success(bytes, result);
                     } catch (Exception e) {
-                        listener.fail("处理异常");
+                        listener.fail("异常：" + e.getMessage());
                         e.printStackTrace();
                     }
                 });
@@ -935,7 +935,7 @@ public class YHttp<T> extends YHttpBase {
                                 listener.success(bytes, object);
                             }
                         } catch (Exception e) {
-                            listener.fail("处理异常");
+                            listener.fail("异常：" + e.getMessage());
                             e.printStackTrace();
                         }
                     });
@@ -943,7 +943,7 @@ public class YHttp<T> extends YHttpBase {
                     listener.fail("对象转换失败");
                     e.printStackTrace();
                 } catch (Exception e) {
-                    listener.fail("处理异常");
+                    listener.fail("异常：" + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -1042,7 +1042,7 @@ public class YHttp<T> extends YHttpBase {
                     try {
                         listener.success(bytes, result);
                     } catch (Exception e) {
-                        listener.fail("处理异常");
+                        listener.fail("异常：" + e.getMessage());
                         e.printStackTrace();
                     }
                 });
@@ -1106,7 +1106,7 @@ public class YHttp<T> extends YHttpBase {
                                 listener.success(bytes, object);
                             }
                         } catch (Exception e) {
-                            listener.fail("处理异常");
+                            listener.fail("异常：" + e.getMessage());
                             e.printStackTrace();
                         }
                     });
@@ -1114,7 +1114,7 @@ public class YHttp<T> extends YHttpBase {
                     listener.fail("对象转换失败");
                     e.printStackTrace();
                 } catch (Exception e) {
-                    listener.fail("处理异常");
+                    listener.fail("异常：" + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -1142,7 +1142,7 @@ public class YHttp<T> extends YHttpBase {
                         try {
                             listener.progress(size, sizeCount);
                         } catch (Exception e) {
-                            listener.fail("处理异常");
+                            listener.fail("异常：" + e.getMessage());
                             e.printStackTrace();
                         }
                     });
@@ -1154,7 +1154,7 @@ public class YHttp<T> extends YHttpBase {
                     try {
                         listener.success(file);
                     } catch (Exception e) {
-                        listener.fail("处理异常");
+                        listener.fail("异常：" + e.getMessage());
                         e.printStackTrace();
                     }
                 });
@@ -1184,7 +1184,7 @@ public class YHttp<T> extends YHttpBase {
                         try {
                             listener.progress(size, sizeCount);
                         } catch (Exception e) {
-                            listener.fail("处理异常");
+                            listener.fail("异常：" + e.getMessage());
                             e.printStackTrace();
                         }
                     });
@@ -1195,7 +1195,7 @@ public class YHttp<T> extends YHttpBase {
                     try {
                         listener.success(bytes);
                     } catch (Exception e) {
-                        listener.fail("处理异常");
+                        listener.fail("异常：" + e.getMessage());
                         e.printStackTrace();
                     }
                 });

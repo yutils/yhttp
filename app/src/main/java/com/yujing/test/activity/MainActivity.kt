@@ -235,8 +235,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
         val url = "https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe"
         var f = File(YPath.getFilePath(this, "download") + "/qq.exe")
 
-        download.downloadFile(url, f, object :
-            YHttpDownloadFileListener {
+        download.downloadFile(url, f, object : YHttpDownloadFileListener {
             override fun progress(downloadSize: Int, fileSize: Int) {
                 val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
                 textView1.text = "$downloadSize/$fileSize"
