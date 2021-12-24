@@ -889,7 +889,7 @@ public class YHttp<T> extends YHttpBase {
                 byte[] bytes = request(requestUrl, requestBytes, requestMethod);
                 String result = new String(bytes);
                 if (showLog) {
-                    String info = " \n请求地址：" + requestMethod + "--->" + requestUrl;
+                    String info = "请求地址：" + requestMethod + "--->" + requestUrl;
                     if (requestBytes != null && requestBytes.length != 0)
                         info += "\n请求参数：" + new String(requestBytes);
                     info += "\n请求结果：" + result;
@@ -906,7 +906,7 @@ public class YHttp<T> extends YHttpBase {
                 });
             } catch (Exception e) {
                 if (showLog) {
-                    String info = " \n请求地址：" + requestMethod + "--->" + requestUrl;
+                    String info = "请求地址：" + requestMethod + "--->" + requestUrl;
                     if (requestBytes != null) info += "\n请求参数：" + new String(requestBytes);
                     info += "\n请求异常：" + exceptionToString(e);
                     info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
@@ -1048,7 +1048,7 @@ public class YHttp<T> extends YHttpBase {
                 byte[] bytes = upload(requestUrl, requestBytes, uploads);
                 String result = new String(bytes);
                 if (showLog) {
-                    String info = " \n文件上传\n请求地址：" + requestMethod + "--->" + requestUrl;
+                    String info = "文件上传\n请求地址：" + requestMethod + "--->" + requestUrl;
                     if (requestBytes != null && requestBytes.length != 0)
                         info += "\n请求参数：" + new String(requestBytes);
                     info += "\n文件数：" + uploads.size();
@@ -1066,7 +1066,7 @@ public class YHttp<T> extends YHttpBase {
                 });
             } catch (Exception e) {
                 if (showLog) {
-                    String info = " \n文件上传\n请求地址：" + requestMethod + "--->" + requestUrl;
+                    String info = "文件上传\n请求地址：" + requestMethod + "--->" + requestUrl;
                     if (requestBytes != null) info += "\n请求参数：" + new String(requestBytes);
                     info += "\n文件数：" + uploads.size();
                     info += "\n请求异常：" + exceptionToString(e);
@@ -1174,7 +1174,7 @@ public class YHttp<T> extends YHttpBase {
                     });
                 });
                 if (showLog) {
-                    String info = " \n文件下载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    String info = "文件下载\n请求地址：" + "GET" + "--->" + requestUrl;
                     info += "\n保存成功：" + file.getPath();
                     info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
                     println(info);
@@ -1189,7 +1189,7 @@ public class YHttp<T> extends YHttpBase {
                 });
             } catch (Exception e) {
                 if (showLog) {
-                    String info = " \n文件下载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    String info = "文件下载\n请求地址：" + "GET" + "--->" + requestUrl;
                     info += "\n请求异常：" + exceptionToString(e);
                     info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
                     println(info);
@@ -1224,7 +1224,7 @@ public class YHttp<T> extends YHttpBase {
                     });
                 });
                 if (showLog) {
-                    String info = " \n文件加载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    String info = "文件加载\n请求地址：" + "GET" + "--->" + requestUrl;
                     info += "\n文件加载完成";
                     info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
                     println(info);
@@ -1239,7 +1239,7 @@ public class YHttp<T> extends YHttpBase {
                 });
             } catch (Exception e) {
                 if (showLog) {
-                    String info = " \n文件加载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    String info = "文件加载\n请求地址：" + "GET" + "--->" + requestUrl;
                     info += "\n请求异常：" + exceptionToString(e);
                     info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
                     println(info);
@@ -1341,7 +1341,7 @@ public class YHttp<T> extends YHttpBase {
         int strLength = msg.length();
         int start = 0;
         int end = LOG_MAX_LENGTH;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < (msg.length() / LOG_MAX_LENGTH + 1); i++) {
             //剩下的文本还是大于规定长度则继续重复截取并输出
             if (strLength > end) {
                 String s = tag + " " + i;

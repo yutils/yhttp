@@ -85,9 +85,10 @@ public class Android {
             }
             return true;
         } catch (Exception e) {
-            Log("e", "错误", e.getMessage());
+            //Log("e", "错误", e.getMessage());
+            //如果是非安卓，返回false
+            return false;
         }
-        return false;
     }
 
     /**
@@ -128,7 +129,7 @@ public class Android {
         try {
             Class cLog = Class.forName("android.util.Log");
             Method method = cLog.getMethod(type, String.class, String.class, Throwable.class);
-            method.invoke(null, tag, msg, throwable);
+            method.invoke(null, tag, " \n" + msg, throwable);
             return true;
         } catch (Exception e) {
             //System.out.println("打印日志错误:" + e.getMessage() + "\n日志:\ttype:" + type + "\ttag:" + tag + "\tmsg:" + msg);
