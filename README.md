@@ -14,10 +14,10 @@
 > * 11.自定义gson，如：可以直接序列化指定日期格式的内容
 > * 12.链式调用，代码更加简洁，可以不监听失败回调  
 
-采用java8.0，安卓11.0，API30，androidx。
+采用java8.0，安卓12.0，API31，androidx。
 
 [![platform](https://img.shields.io/badge/platform-Android-lightgrey.svg)](https://developer.android.google.cn/studio/index.html)
-![Gradle](https://img.shields.io/badge/Gradle-7.1-brightgreen.svg)
+![Gradle](https://img.shields.io/badge/Gradle-7.2-brightgreen.svg)
 [![last commit](https://img.shields.io/github/last-commit/yutils/yhttp.svg)](https://github.com/yutils/yhttp/commits/master)
 ![repo size](https://img.shields.io/github/repo-size/yutils/yhttp.svg)
 ![android studio](https://img.shields.io/badge/android%20studio-2020.3.1-green.svg)
