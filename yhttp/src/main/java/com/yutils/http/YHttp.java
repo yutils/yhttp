@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * 网络请求类
  *
- * @author yujing 2021年3月25日11:14:17
+ * @author yujing 2021年12月24日09:50:29
  * 详细说明和最新版请查看 https://github.com/yutils/yhttp
  * 优点：
  * 1.支持get，post，put，delete请求，一行实现同步请求，一行实现异步请求
@@ -884,12 +884,18 @@ public class YHttp<T> extends YHttpBase {
      */
     public void request(final String requestUrl, final byte[] requestBytes, String requestMethod, final YHttpListener listener) {
         Thread thread = new Thread(() -> {
+            long startTime = System.currentTimeMillis();
             try {
-                if (showLog) println("请求地址：" + requestMethod + "--->" + requestUrl);
-                if (showLog && requestBytes != null) println("请求参数：" + new String(requestBytes));
                 byte[] bytes = request(requestUrl, requestBytes, requestMethod);
                 String result = new String(bytes);
-                if (showLog) println("请求结果：" + result);
+                if (showLog) {
+                    String info = " \n请求地址：" + requestMethod + "--->" + requestUrl;
+                    if (requestBytes != null && requestBytes.length != 0)
+                        info += "\n请求参数：" + new String(requestBytes);
+                    info += "\n请求结果：" + result;
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 Android.runOnUiThread(() -> {
                     try {
                         listener.success(bytes, result);
@@ -899,6 +905,13 @@ public class YHttp<T> extends YHttpBase {
                     }
                 });
             } catch (Exception e) {
+                if (showLog) {
+                    String info = " \n请求地址：" + requestMethod + "--->" + requestUrl;
+                    if (requestBytes != null) info += "\n请求参数：" + new String(requestBytes);
+                    info += "\n请求异常：" + exceptionToString(e);
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
@@ -1030,12 +1043,19 @@ public class YHttp<T> extends YHttpBase {
      */
     public void upload(final String requestUrl, final byte[] requestBytes, final List<Upload> uploads, final YHttpListener listener) {
         Thread thread = new Thread(() -> {
+            long startTime = System.currentTimeMillis();
             try {
-                if (showLog)
-                    println("文件上传开始：\nupload--->" + requestUrl + (requestBytes == null ? "" : ("\n文件数：" + uploads.size() + "\n请求参数：" + new String(requestBytes))));
                 byte[] bytes = upload(requestUrl, requestBytes, uploads);
                 String result = new String(bytes);
-                if (showLog) println("文件上传完成：" + result);
+                if (showLog) {
+                    String info = " \n文件上传\n请求地址：" + requestMethod + "--->" + requestUrl;
+                    if (requestBytes != null && requestBytes.length != 0)
+                        info += "\n请求参数：" + new String(requestBytes);
+                    info += "\n文件数：" + uploads.size();
+                    info += "\n请求结果：" + result;
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 Android.runOnUiThread(() -> {
                     try {
                         listener.success(bytes, result);
@@ -1045,6 +1065,14 @@ public class YHttp<T> extends YHttpBase {
                     }
                 });
             } catch (Exception e) {
+                if (showLog) {
+                    String info = " \n文件上传\n请求地址：" + requestMethod + "--->" + requestUrl;
+                    if (requestBytes != null) info += "\n请求参数：" + new String(requestBytes);
+                    info += "\n文件数：" + uploads.size();
+                    info += "\n请求异常：" + exceptionToString(e);
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
@@ -1133,8 +1161,8 @@ public class YHttp<T> extends YHttpBase {
      */
     public void downloadFile(final String requestUrl, final File file, final YHttpDownloadFileListener listener) {
         Thread thread = new Thread(() -> {
+            long startTime = System.currentTimeMillis();
             try {
-                if (showLog) println("文件下载开始：\nGET--->" + requestUrl);
                 downloadFile(requestUrl, file, (size, sizeCount) -> {
                     Android.runOnUiThread(() -> {
                         try {
@@ -1145,9 +1173,12 @@ public class YHttp<T> extends YHttpBase {
                         }
                     });
                 });
-
-                if (showLog)
-                    println("文件下载完成：\nGET--->" + requestUrl + "\n保存路径：" + file.getPath());
+                if (showLog) {
+                    String info = " \n文件下载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    info += "\n保存成功：" + file.getPath();
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 Android.runOnUiThread(() -> {
                     try {
                         listener.success(file);
@@ -1157,6 +1188,12 @@ public class YHttp<T> extends YHttpBase {
                     }
                 });
             } catch (Exception e) {
+                if (showLog) {
+                    String info = " \n文件下载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    info += "\n请求异常：" + exceptionToString(e);
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
@@ -1174,9 +1211,8 @@ public class YHttp<T> extends YHttpBase {
      */
     public void load(final String requestUrl, final YHttpLoadListener listener) {
         Thread thread = new Thread(() -> {
+            long startTime = System.currentTimeMillis();
             try {
-                if (showLog)
-                    println("文件加载开始：\nGET--->" + requestUrl);
                 byte[] bytes = load(requestUrl, (size, sizeCount) -> {
                     Android.runOnUiThread(() -> {
                         try {
@@ -1187,8 +1223,12 @@ public class YHttp<T> extends YHttpBase {
                         }
                     });
                 });
-                if (showLog)
-                    println("文件加载完成");
+                if (showLog) {
+                    String info = " \n文件加载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    info += "\n文件加载完成";
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 Android.runOnUiThread(() -> {
                     try {
                         listener.success(bytes);
@@ -1198,6 +1238,12 @@ public class YHttp<T> extends YHttpBase {
                     }
                 });
             } catch (Exception e) {
+                if (showLog) {
+                    String info = " \n文件加载\n请求地址：" + "GET" + "--->" + requestUrl;
+                    info += "\n请求异常：" + exceptionToString(e);
+                    info += "\n耗时：" + (System.currentTimeMillis() - startTime) + "毫秒";
+                    println(info);
+                }
                 exception(e, listener);
             } finally {
                 YHttpThreadPool.shutdown();
@@ -1215,24 +1261,28 @@ public class YHttp<T> extends YHttpBase {
      */
     void exception(Exception e, Object listener) {
         Android.runOnUiThread(() -> {
-            if (e instanceof MalformedURLException) {
-                error("URL地址不规范", listener);
-            } else if (e instanceof java.net.SocketTimeoutException) {
-                error("网络连接超时", listener);
-            } else if (e instanceof UnsupportedEncodingException) {
-                error("不支持的编码", listener);
-            } else if (e instanceof FileNotFoundException) {
-                error("找不到该地址", listener);
-            } else if (e instanceof IOException) {
-                error("连接服务器失败", listener);
-            } else {
-                if ("终止下载".equals(e.getMessage())) {
-                    error(e.getMessage(), listener);
-                } else {
-                    error("请求失败 " + e.getMessage(), listener);
-                }
-            }
+            error(exceptionToString(e), listener);
         });
+    }
+
+    String exceptionToString(Exception e) {
+        if (e instanceof MalformedURLException) {
+            return "URL地址不规范";
+        } else if (e instanceof java.net.SocketTimeoutException) {
+            return "网络连接超时";
+        } else if (e instanceof UnsupportedEncodingException) {
+            return "不支持的编码";
+        } else if (e instanceof FileNotFoundException) {
+            return "找不到该地址";
+        } else if (e instanceof IOException) {
+            return "连接服务器失败";
+        } else {
+            if ("终止下载".equals(e.getMessage())) {
+                return "终止下载";
+            } else {
+                return "请求失败 " + e.getMessage();
+            }
+        }
     }
 
     /**

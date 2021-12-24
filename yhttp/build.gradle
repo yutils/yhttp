@@ -9,7 +9,7 @@ java {
 
 dependencies {
     //gson,https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle"

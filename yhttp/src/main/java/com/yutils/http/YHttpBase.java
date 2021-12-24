@@ -498,7 +498,7 @@ public class YHttpBase {
                         if (list.get(i).length() >= idEnd) {
                             String JSESSIONID = list.get(i).substring(idStart, idEnd);// 如：list.get(i)="JSESSIONID=743D39694F006763220CA0CA63FE8978";
                             if (sessionListener != null)
-                                sessionListener.sessionId(JSESSIONID);
+                                Android.runOnUiThread(() -> sessionListener.sessionId(JSESSIONID));
                             sessionId = JSESSIONID;
                         }
                     }
