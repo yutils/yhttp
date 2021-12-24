@@ -13,8 +13,12 @@
 > * 10.支持安卓，请求结果直接回调到UI线程（主线程）
 > * 11.自定义gson，如：可以直接序列化指定日期格式的内容
 > * 12.链式调用，代码更加简洁，可以不监听失败回调  
+> * 13.返回数据在logcat中清晰可见，并且可以直接返回对象
 
 采用java8.0，安卓12.0，API31，androidx。
+
+#### 返回数据调试清晰可见，超长json自动分段打印logcat
+![logcat](doc/logcat.png)
 
 [![platform](https://img.shields.io/badge/platform-Android-lightgrey.svg)](https://developer.android.google.cn/studio/index.html)
 ![Gradle](https://img.shields.io/badge/Gradle-7.2-brightgreen.svg)
@@ -38,7 +42,7 @@ allprojects {
 }
 ```
 
-2. [子module添加依赖，当前最新版：————> 1.1.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.1.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
+2. [当前最新版：————> 1.1.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.1.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
 
 ```
 dependencies {
