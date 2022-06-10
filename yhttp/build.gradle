@@ -1,15 +1,13 @@
 plugins {
     id 'java-library'
 }
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
-
 dependencies {
     //gson,https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.code.gson:gson:2.9.0'
 }
-
+//maven配置和签名文件，请注释掉该行
 apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle"

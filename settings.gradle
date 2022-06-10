@@ -1,2 +1,26 @@
-rootProject.name='utils_YHttp'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+//        google()
+//        mavenCentral()
+        maven { url 'https://repo1.maven.org/maven2' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://jitpack.io' }
+        maven { url 'http://maven.kotlinx.com:8081/repository/maven-public'; allowInsecureProtocol = true }
+        maven { url 'https://kotlinx.com/nexus/repository/maven-public' }
+        maven { url "C:/Users/yujing/.m2/repository" }
+    }
+}
+rootProject.name='utils_yhttp'
 include ':app',':yhttp'

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
-      <module name="utils_YHttp.app" target="11" />
+      <module name="utils_yhttp.app" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
