@@ -33,16 +33,7 @@
 
 ## Gradle 引用
 
-1. 在根build.gradle中添加
-```
-allprojects {
-    repositories {
-        mavenCentral()
-    }
-}
-```
-
-2. [当前最新版：————> 1.1.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.1.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
+[添加依赖，当前最新版：————> 1.1.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.1.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
 
 ```
 dependencies {
@@ -51,6 +42,21 @@ dependencies {
 }
 ```
 
+注：如果引用失败，看下面方案
+```
+allprojects {
+    repositories {
+        //google()
+        //mavenCentral()
+        
+        //阿里云镜像
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+
+        //如果还是不容易拉取,可以试试直接用maven.org
+        maven { url 'https://repo1.maven.org/maven2' }
+    }
+```
 ##  用法举例：
   1.java工程中，异步请求，YHttp返回结果在子线程  
   2.安卓工程中，异步请求，如果在UI线程（主线程）中创建YHttp，将返回结果返回到UI线程（主线程）  
