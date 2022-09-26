@@ -21,10 +21,10 @@
 ![logcat](doc/logcat.png)
 
 [![platform](https://img.shields.io/badge/platform-Android-lightgrey.svg)](https://developer.android.google.cn/studio/index.html)
-![Gradle](https://img.shields.io/badge/Gradle-7.2-brightgreen.svg)
+![Gradle](https://img.shields.io/badge/Gradle-7.5.1-brightgreen.svg)
 [![last commit](https://img.shields.io/github/last-commit/yutils/yhttp.svg)](https://github.com/yutils/yhttp/commits/master)
 ![repo size](https://img.shields.io/github/repo-size/yutils/yhttp.svg)
-![android studio](https://img.shields.io/badge/android%20studio-2020.3.1-green.svg)
+![android studio](https://img.shields.io/badge/android%20studio-2021.3.1-green.svg)
 [![maven](https://img.shields.io/badge/maven-address-green.svg)](https://search.maven.org/artifact/com.kotlinx/yhttp)
 
 ## 已经从jitpack.io仓库移动至maven中央仓库 
