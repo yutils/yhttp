@@ -7,7 +7,7 @@ java {
 }
 dependencies {
     //gson,https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 //maven配置和签名文件，请注释掉该行
 apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle"

@@ -15,7 +15,13 @@
 > * 12.链式调用，代码更加简洁，可以不监听失败回调  
 > * 13.返回数据在logcat中清晰可见，并且可以直接返回对象
 
-采用java8.0，安卓12.0，API31，androidx。
+采用java17，安卓13.0，API33，androidx。
+
+# 建议大家使用OKHTTP
+
+## Gradle采用java17！！！ java17！！！java17！！！
+
+### 设置方法： Project Structure ----> SDK Location ----> JDK location was moved to Gradle Settings. ---->  Gradle JDK ---->  JDK17
 
 #### 返回数据调试清晰可见，超长json自动分段打印logcat
 ![logcat](doc/logcat.png)
