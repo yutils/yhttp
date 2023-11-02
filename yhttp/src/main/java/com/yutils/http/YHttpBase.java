@@ -490,17 +490,20 @@ public class YHttpBase {
             List<String> list = map.get("Set-Cookie");
             if (list != null) {
                 for (int i = 0; i < list.size(); i++) {
-                    //System.out.println("Set-Cookie："+list.get(i));
+                    //System.out.println("Set-Cookie："+list.get(i)); 
                     int start = list.get(i).indexOf("JSESSIONID");
                     if (start != -1) {
-                        int idStart = start + 10 + 1;
-                        int idEnd = start + 10 + 1 + 32;
-                        if (list.get(i).length() >= idEnd) {
-                            String JSESSIONID = list.get(i).substring(idStart, idEnd);// 如：list.get(i)="JSESSIONID=743D39694F006763220CA0CA63FE8978";
-                            if (sessionListener != null)
-                                Android.runOnUiThread(() -> sessionListener.sessionId(JSESSIONID));
-                            sessionId = JSESSIONID;
-                        }
+                        sessionId = list.get(i).replace("JSESSIONID","").split(";")[0];
+                        if (sessionListener != null)
+                            Android.runOnUiThread(() -> sessionListener.sessionId(sessionId));
+                        // int idStart = start + 10 + 1;
+                        // int idEnd = start + 10 + 1 + 32;
+                        // if (list.get(i).length() >= idEnd) {
+                        //     String JSESSIONID = list.get(i).substring(idStart, idEnd);// 如：list.get(i)="JSESSIONID=743D39694F006763220CA0CA63FE8978";
+                        //     if (sessionListener != null)
+                        //         Android.runOnUiThread(() -> sessionListener.sessionId(JSESSIONID));
+                        //     sessionId = JSESSIONID;
+                        // }
                     }
                 }
             }
