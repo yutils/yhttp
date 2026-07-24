@@ -8,7 +8,12 @@ import com.yujing.test.R
 import com.yujing.test.bean.UU
 import com.yujing.test.bean.User
 import com.yujing.test.databinding.ActivityAllTestBinding
-import com.yujing.utils.*
+import com.yujing.utils.YConvert
+import com.yujing.utils.YJson
+import com.yujing.utils.YPath
+import com.yujing.utils.YPermissions
+import com.yujing.utils.YPicture
+import com.yujing.utils.YShow
 import com.yutils.http.YHttp
 import com.yutils.http.contract.ObjectListener
 import com.yutils.http.contract.YHttpDownloadFileListener
@@ -45,9 +50,6 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
         }
         Create.button(binding.wll, "拍照上传图片") {
             netUp()
-        }
-        Create.button(binding.wll, "App更新") {
-            update()
         }
         Create.button(binding.wll, "文件下载") {
             downLoad()
@@ -221,19 +223,12 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
         }
     }
 
-    private var yVersionUpdate: YVersionUpdate? = null
-    private fun update() {
-        val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
-        YLog.i("url：$url")
-        yVersionUpdate = YVersionUpdate()
-        yVersionUpdate?.update(20, false, url, "1.9.99", "\n修复了bug1引起的问题\n新增功能：aaa")
-    }
 
     private var download = YHttp.create()
     private fun downLoad() {
         textView1.text = "开始下载"
-        val url = "https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe"
-        var f = File(YPath.getFilePath(this, "download") + "/qq.exe")
+        val url = "https://qqdl.gtimg.cn/qqfile/QQNT/9.9.32/release/9d4083e2/QQ_9.9.32_260716_x64_01.exe"
+        val f = File(YPath.getFilePath(this, "download") + "/qq.exe")
 
         download.downloadFile(url, f, object : YHttpDownloadFileListener {
             override fun progress(downloadSize: Int, fileSize: Int) {
@@ -263,6 +258,5 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
 
     override fun onDestroy() {
         super.onDestroy()
-        yVersionUpdate?.onDestroy()
     }
 }

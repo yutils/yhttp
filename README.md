@@ -15,8 +15,9 @@
 > * 12.链式调用，代码更加简洁，可以不监听失败回调  
 > * 13.返回数据在logcat中清晰可见，并且可以直接返回对象
 
-采用java17，安卓13.0，API33，androidx。
+采用java17，安卓14.0，API33，androidx。
 
+# 停更！！！
 # 建议大家使用OKHTTP
 
 ## Gradle采用java17！！！ java17！！！java17！！！

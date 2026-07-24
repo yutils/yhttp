@@ -252,7 +252,7 @@ public class YHttpBase {
         int downloadSize = 0;
         int fileSize = urlConn.getContentLength(); // 获取不到文件大小时候fileSize=-1
         int len;
-        byte[] buffer = new byte[1024 * 8];
+        byte[] buffer = new byte[1024 * 128];
         FileOutputStream fos = new FileOutputStream(file);
         InputStream inputStream = urlConn.getInputStream();
         downLoadStop = false;//这设置成false，在下载过程中downLoadIsStop的值可能会被改变
@@ -294,7 +294,7 @@ public class YHttpBase {
         int downloadSize = 0;
         int fileSize = urlConn.getContentLength(); // 获取不到文件大小时候fileSize=-1
         int len;
-        byte[] buffer = new byte[1024 * 8];
+        byte[] buffer = new byte[1024 * 128];
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         InputStream inputStream = urlConn.getInputStream();
         while ((len = inputStream.read(buffer)) != -1) {
@@ -403,7 +403,7 @@ public class YHttpBase {
                     out.write(strBuf.toString().getBytes());
                     DataInputStream in = new DataInputStream(new FileInputStream(item.getFile()));
                     int bytes;
-                    byte[] bufferOut = new byte[1024 * 8];
+                    byte[] bufferOut = new byte[1024 * 128];
                     while ((bytes = in.read(bufferOut)) != -1)
                         out.write(bufferOut, 0, bytes);
                     in.close();
